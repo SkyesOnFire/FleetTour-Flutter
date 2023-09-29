@@ -16,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   var _enteredLogin = '';
   var _enteredPassword = '';
-1q
+
   void _attemptLogin() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -25,18 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       hash += await FlutterBcrypt.hashPw(
           password: _enteredPassword, salt: r'$2b$06$C6UzMDM.H6dfI/f/IKxGhu');
-      print('FlutterBcrypt - hashPw after: $hash');
 
-      var salt = await FlutterBcrypt.salt();
-      print('FlutterBcrypt salt = $salt');
-
-      Map<String, String> uParams = {
+      Map<String, String> uBody = {
         'login': _enteredLogin,
         'senha': hash,
       };
 
-      final url = Uri.http(ip, 'usuarios/login', uParams);
-      final response = await http.get(url);
+      final url = Uri.http(ip, 'rest/auth/login');
+      final response = await http.post(url, body: uBody);
 
       if (!context.mounted) {
         return;
