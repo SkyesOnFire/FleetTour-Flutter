@@ -6,7 +6,7 @@ import 'package:fleet_tour/models/passageiro.dart';
 import 'package:fleet_tour/widgets/dropdown_menu.dart';
 import 'package:fleet_tour/widgets/passageiro/passageiros_list.dart';
 import 'package:http/http.dart' as http;
-import 'package:fleet_tour/models/category.dart';
+import 'package:fleet_tour/models/pages.dart';
 import 'package:fleet_tour/widgets/passageiro/edit_passageiro.dart';
 import 'package:fleet_tour/widgets/passageiro/new_passageiro.dart';
 

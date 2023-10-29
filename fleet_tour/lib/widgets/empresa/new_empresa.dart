@@ -36,7 +36,6 @@ class _NewEmpresaState extends State<NewEmpresa> {
         nomeResponsavel: _enteredNomeResponsavel,
         foneResponsavel: _enteredFoneResponsavel,
         emailResponsavel: _enteredEmailResponsavel,
-        logo: _enteredLogo ?? [],
       );
 
       final url = Uri.http(ip, 'empresas');
@@ -71,6 +70,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
             child: Column(
               children: [
                 TextFormField(
+                  16,
                   decoration: const InputDecoration(labelText: 'CNPJ'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -86,6 +86,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   decoration: const InputDecoration(labelText: 'Nome Fantasia'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -98,6 +99,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
+                  35,
                   decoration: const InputDecoration(labelText: 'Razão Social'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -110,6 +112,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   decoration: const InputDecoration(labelText: 'Email'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -127,6 +130,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   decoration:
                       const InputDecoration(labelText: 'Nome Responsável'),
                   validator: (value) {
@@ -140,6 +144,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
+                  25,
                   decoration:
                       const InputDecoration(labelText: 'Telefone Responsável'),
                   validator: (value) {
@@ -156,6 +161,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   decoration:
                       const InputDecoration(labelText: 'Email Responsável'),
                   validator: (value) {

@@ -94,6 +94,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
           child: ListView(
             children: [
               TextFormField(
+                255,
                 initialValue: _editedNome,
                 decoration: InputDecoration(labelText: 'Nome'),
                 onSaved: (value) {
@@ -101,6 +102,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
+                255,
                 initialValue: _editedFuncao,
                 decoration: InputDecoration(labelText: 'Função'),
                 onSaved: (value) {
@@ -108,6 +110,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
+                11,
                 initialValue: _editedCpf,
                 decoration: InputDecoration(labelText: 'CPF'),
                 onSaved: (value) {
@@ -115,6 +118,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
+                15,
                 initialValue: _editedTelefone,
                 decoration: InputDecoration(labelText: 'Telefone'),
                 onSaved: (value) {
@@ -122,6 +126,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
+                15,
                 initialValue: _editedGenero,
                 decoration: InputDecoration(labelText: 'Gênero'),
                 onSaved: (value) {
@@ -129,6 +134,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
+                11,
                 initialValue: _editedRg,
                 decoration: InputDecoration(labelText: 'RG'),
                 onSaved: (value) {
@@ -136,6 +142,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
+                25,
                 initialValue: _editedCnh,
                 decoration: InputDecoration(labelText: 'CNH'),
                 onSaved: (value) {

@@ -83,6 +83,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
             child: Column(
               children: [
                 TextFormField(
+                  255,
                   initialValue: _enteredNome,
                   decoration: const InputDecoration(
                     labelText: "Nome", // Updated label text
@@ -101,6 +102,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
                   },
                 ),
                 TextFormField(
+                  11,
                   initialValue: _enteredRg,
                   decoration: const InputDecoration(
                     labelText: "Rg", // Updated label text
@@ -119,6 +121,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
                   },
                 ),
                 TextFormField(
+                  11,
                   initialValue: _enteredOrgaoEmissor,
                   decoration: const InputDecoration(
                     labelText: "Orgão Emissor", // Updated label text
@@ -142,7 +145,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
                     Expanded(
                       child: TextFormField(
                         initialValue: _enteredTipoCliente,
-                        maxLength: 10,
+                        10,
                         decoration: const InputDecoration(
                           label: Text("Tipo de cliente"),
                         ),

@@ -1,35 +1,31 @@
 import 'package:fleet_tour/providers/dropdown_state.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Importe o GetX
 import 'package:fleet_tour/widgets/login_screen.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => DropdownState(),
-      child: const MyApp(),
+    GetMaterialApp(  // Use GetMaterialApp ao invés de MaterialApp
+      initialBinding: InitialBinding(),  // Inicialize o controlador aqui
+      title: 'Fleet Tour',
+      theme: ThemeData.light().copyWith(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color.fromARGB(255, 255, 255, 255),
+          brightness: Brightness.dark,
+          surface: Color.fromARGB(255, 91, 91, 253),
+        ),
+        scaffoldBackgroundColor: Color.fromARGB(255, 78, 96, 101),
+      ),
+      home: const LoginScreen(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class InitialBinding extends Bindings {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fleet Tour',
-      theme: ThemeData.dark().copyWith(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 147, 229, 250),
-          brightness: Brightness.dark,
-          surface: const Color.fromARGB(255, 42, 51, 59),
-        ),
-        scaffoldBackgroundColor: const Color.fromARGB(255, 50, 58, 60),
-      ),
-      home: const LoginScreen(),
-    );
+  void dependencies() {
+    // Inicializando o controlador usando Get.put
+    Get.put(DropdownState());
   }
 }

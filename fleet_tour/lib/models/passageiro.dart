@@ -26,4 +26,5 @@ class Passageiro {
       'dataNasc': dataNasc,
     };
   }
+
 }

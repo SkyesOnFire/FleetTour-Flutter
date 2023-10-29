@@ -82,7 +82,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
             child: Column(
               children: [
                 TextFormField(
-                  maxLength: 50,
+                  50,
                   decoration: const InputDecoration(
                     label: Text("Nome"),
                   ),
@@ -104,7 +104,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        maxLength: 11,
+                        11,
                         decoration: const InputDecoration(
                           label: Text("Orgão Emissor"),
                         ),
@@ -126,7 +126,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextFormField(
-                        maxLength: 11,
+                        11,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text("Rg"),
@@ -153,7 +153,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        maxLength: 10,
+                        10,
                         decoration: const InputDecoration(
                           label: Text("Tipo de cliente"),
                         ),

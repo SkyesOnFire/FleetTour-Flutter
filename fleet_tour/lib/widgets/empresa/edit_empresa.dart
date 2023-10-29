@@ -83,6 +83,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
             child: Column(
               children: [
                 TextFormField(
+                  25,
                   initialValue: _editedCnpj,
                   decoration: const InputDecoration(labelText: 'CNPJ'),
                   onSaved: (value) {
@@ -90,6 +91,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   initialValue: _editedNomeFantasia,
                   decoration: const InputDecoration(labelText: 'Nome Fantasia'),
                   onSaved: (value) {
@@ -97,6 +99,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   initialValue: _editedRazaoSocial,
                   decoration: const InputDecoration(labelText: 'Razão Social'),
                   onSaved: (value) {
@@ -104,6 +107,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   initialValue: _editedEmail,
                   decoration: const InputDecoration(labelText: 'Email'),
                   onSaved: (value) {
@@ -111,22 +115,28 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
+                  255,
                   initialValue: _editedNomeResponsavel,
-                  decoration: const InputDecoration(labelText: 'Nome Responsável'),
+                  decoration:
+                      const InputDecoration(labelText: 'Nome Responsável'),
                   onSaved: (value) {
                     _editedNomeResponsavel = value!;
                   },
                 ),
                 TextFormField(
+                  255,
                   initialValue: _editedFoneResponsavel,
-                  decoration: const InputDecoration(labelText: 'Telefone Responsável'),
+                  decoration:
+                      const InputDecoration(labelText: 'Telefone Responsável'),
                   onSaved: (value) {
                     _editedFoneResponsavel = value!;
                   },
                 ),
                 TextFormField(
+                  255,
                   initialValue: _editedEmailResponsavel,
-                  decoration: const InputDecoration(labelText: 'Email Responsável'),
+                  decoration:
+                      const InputDecoration(labelText: 'Email Responsável'),
                   onSaved: (value) {
                     _editedEmailResponsavel = value!;
                   },

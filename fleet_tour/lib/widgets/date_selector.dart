@@ -38,9 +38,9 @@ class _DateSelectorWidgetState extends State<DateSelectorWidget> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
+      initialDate: selectedDate,
       firstDate: DateTime(1900),
-      lastDate: DateTime(2023),
+      lastDate: DateTime(DateTime.now().year),
     );
 
     if (pickedDate != null && pickedDate != selectedDate) {

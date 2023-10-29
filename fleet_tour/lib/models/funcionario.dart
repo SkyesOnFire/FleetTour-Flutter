@@ -39,4 +39,17 @@ class Funcionario {
       'vencimentoCartSaude': vencimentoCartSaude?.toIso8601String(),
     };
   }
+
+  Funcionario.fromJson(Map<String, dynamic> json)
+      : id = json['idFuncionario'],
+        funcao = json['funcao'],
+        nome = json['nome'],
+        cpf = json['cpf'],
+        telefone = json['telefone'],
+        genero = json['genero'],
+        rg = json['rg'],
+        cnh = json['cnh'],
+        dataNasc = DateTime.parse(json['dataNasc']),
+        vencimentoCnh = json['vencimentoCnh'] != null ? DateTime.parse(json['vencimentoCnh']) : null,
+        vencimentoCartSaude = json['vencimentoCartSaude'] != null ? DateTime.parse(json['vencimentoCartSaude']) : null;
 }

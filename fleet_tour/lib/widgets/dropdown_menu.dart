@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import 'package:fleet_tour/widgets/empresa/empresas.dart';
 import 'package:fleet_tour/widgets/funcionario/funcionarios.dart';
-import 'package:fleet_tour/widgets/onibus/onibus.dart';
+import 'package:fleet_tour/widgets/veiculo/veiculo.dart';
 import 'package:fleet_tour/widgets/passageiro/passageiros.dart';
-import 'package:fleet_tour/providers/dropdown_state.dart'; // Importe o arquivo onde você criou o DropdownState
+import 'package:fleet_tour/providers/dropdown_state.dart';
 
 class DropdownMenuButton extends StatefulWidget {
   const DropdownMenuButton({super.key});
@@ -21,12 +21,14 @@ class _DropdownMenuButtonState extends State<DropdownMenuButton> {
     'Empresa'
   ];
 
+  final DropdownState dropdownState = Get.find(); // Obtendo o controlador
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<DropdownState>(
-      builder: (context, dropdownState, child) {
+    return Obx(
+      () {
         return DropdownButton<String>(
-          value: dropdownState.selectedItem,
+          value: dropdownState.selectedItem.value,
           items: dropdownItems.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -37,29 +39,13 @@ class _DropdownMenuButtonState extends State<DropdownMenuButton> {
             dropdownState.selectItem(newValue); // Atualizar o estado
 
             if (newValue == "Frota") {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const Expenses(),
-                ),
-              );
+              Get.to(() => const Veiculos()); // Usando Get.to() para navegação
             } else if (newValue == "Passageiros") {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const Passageiros(),
-                ),
-              );
+              Get.to(() => const Passageiros());
             } else if (newValue == "Funcionarios") {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const Funcionarios(),
-                ),
-              );
+              Get.to(() => const Funcionarios());
             } else if (newValue == "Empresa") {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const Empresas(),
-                ),
-              );
+              Get.to(() => const Empresas());
             }
           },
         );

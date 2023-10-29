@@ -82,6 +82,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
             child: Column(
               children: [
                 TextFormField(
+                  255,
                   decoration: const InputDecoration(
                     label: Text("Função"),
                   ),
@@ -96,6 +97,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
+                  255,
                   decoration: const InputDecoration(
                     label: Text("Nome"),
                   ),
@@ -110,6 +112,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
+                  11,
                   decoration: const InputDecoration(
                     label: Text("CPF"),
                   ),
@@ -127,6 +130,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
+                  25,
                   decoration: const InputDecoration(
                     label: Text("Telefone"),
                   ),
@@ -144,6 +148,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
+                  25,
                   decoration: const InputDecoration(
                     label: Text("Gênero"),
                   ),
@@ -158,6 +163,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
+                  11,
                   decoration: const InputDecoration(
                     label: Text("RG"),
                   ),
@@ -175,6 +181,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
+                  25,
                   decoration: const InputDecoration(
                     label: Text("CNH"),
                   ),

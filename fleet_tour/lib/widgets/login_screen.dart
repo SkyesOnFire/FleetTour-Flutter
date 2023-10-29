@@ -1,9 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:fleet_tour/svg_icon.dart';
+import 'package:fleet_tour/widgets/resgisterAddress_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:fleet_tour/widgets/onibus/onibus.dart';
+import 'package:fleet_tour/widgets/veiculo/veiculo.dart';
 import 'package:flutter_bcrypt/flutter_bcrypt.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,17 +39,24 @@ class _LoginScreenState extends State<LoginScreen> {
         'senha': hash,
       };
 
-      final url = Uri.http(ip, 'rest/auth/login');
-      final response = await http.post(url, body: uBody);
+      final url = Uri.https(ip, 'rest/auth/login');
+      final response = await http.post(url,
+          body: jsonEncode({"login": _enteredLogin, "senha": hash}),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+          });
 
-      if (!context.mounted) {
-        return;
-      }
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      if (response.body == "true") {
+        if (!context.mounted) {
+          return;
+        }
+
+        prefs.setString("token", response.body);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const Expenses(),
+            builder: (context) => const Veiculos(),
           ),
         );
       } else {
@@ -56,6 +71,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _doRegister() async {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const registerAdressScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,8 +90,13 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SvgPicture.string(
+                  svgLogo,
+                  height: 300,
+                  width: 300,
+                ),
                 TextFormField(
-                  maxLength: 25,
+                  255,
                   decoration: const InputDecoration(
                     label: Text("Login"),
                   ),
@@ -87,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Expanded(
                       child: TextFormField(
+                        255,
                         obscureText: true,
                         decoration: const InputDecoration(
                           label: Text("Senha"),
@@ -104,11 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
                     ElevatedButton(
-                        onPressed: _attemptLogin, child: const Text('Entrar'))
+                        onPressed: _attemptLogin, child: const Text('Entrar')),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton(
+                        onPressed: _doRegister, child: const Text("Cadastrar"))
                   ],
                 )
               ],
