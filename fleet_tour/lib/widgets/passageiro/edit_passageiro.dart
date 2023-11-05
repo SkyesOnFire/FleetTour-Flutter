@@ -31,17 +31,17 @@ class _EditPassageiroState extends State<EditPassageiro> {
   @override
   void initState() {
     super.initState();
-    _enteredNome = passageiro.nome; // Updated variable name
-    _enteredRg = passageiro.rg; // Updated variable name
-    _enteredOrgaoEmissor = passageiro.orgaoEmissor;
-    _enteredTipoCliente = passageiro.tipoCliente; // Updated variable name
+    _enteredNome = passageiro.nome!; // Updated variable name
+    _enteredRg = passageiro.rg!; // Updated variable name
+    _enteredOrgaoEmissor = passageiro.orgaoEmissor!;
+    _enteredTipoCliente = passageiro.tipoCliente!; // Updated variable name
   }
 
   void _saveItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final url =
-          Uri.http(ip, 'passageiros/${passageiro.id}'); // Updated endpoint
+          Uri.http(ip, 'passageiros/${passageiro.idPassageiro}'); // Updated endpoint
       final body = json.encode(
         {
           'nome': _enteredNome,
@@ -83,7 +83,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
             child: Column(
               children: [
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _enteredNome,
                   decoration: const InputDecoration(
                     labelText: "Nome", // Updated label text
@@ -102,7 +102,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
                   },
                 ),
                 TextFormField(
-                  11,
+                  maxLength: 11,
                   initialValue: _enteredRg,
                   decoration: const InputDecoration(
                     labelText: "Rg", // Updated label text
@@ -121,7 +121,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
                   },
                 ),
                 TextFormField(
-                  11,
+                  maxLength: 11,
                   initialValue: _enteredOrgaoEmissor,
                   decoration: const InputDecoration(
                     labelText: "Orgão Emissor", // Updated label text
@@ -145,7 +145,7 @@ class _EditPassageiroState extends State<EditPassageiro> {
                     Expanded(
                       child: TextFormField(
                         initialValue: _enteredTipoCliente,
-                        10,
+                        maxLength: 10,
                         decoration: const InputDecoration(
                           label: Text("Tipo de cliente"),
                         ),

@@ -20,7 +20,7 @@ class FuncionariosList extends StatelessWidget {
       itemBuilder: (ctx, index) => GestureDetector(
         onTap: () => onEdit(funcionarios[index]),
         child: Dismissible(
-          key: ValueKey(funcionarios[index].id),
+          key: ValueKey(funcionarios[index].idFuncionario),
           background: Container(
             color: Theme.of(context).colorScheme.error.withOpacity(0.75),
             margin: const EdgeInsets.symmetric(horizontal: 8),

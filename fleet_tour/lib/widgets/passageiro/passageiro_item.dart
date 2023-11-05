@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 
-class ExpenseItem extends StatelessWidget {
-  const ExpenseItem(this.passageiro, {super.key});
+class PassageiroItem extends StatelessWidget {
+  const PassageiroItem(this.passageiro, {super.key});
 
   final Passageiro passageiro;
 
@@ -15,7 +15,7 @@ class ExpenseItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              passageiro.nome,
+              passageiro.nome!,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 4),

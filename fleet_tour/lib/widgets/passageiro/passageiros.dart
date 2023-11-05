@@ -38,7 +38,7 @@ class _PassageirosState extends State<Passageiros> {
       Map<String, dynamic> rest = item;
       _loadedItems.add(
         Passageiro(
-          id: rest['idPassageiro'],
+          idPassageiro: rest['idPassageiro'],
           nome: rest['nome'],
           rg: rest['rg'],
           orgaoEmissor: rest['orgaoEmissor'],
@@ -77,10 +77,10 @@ class _PassageirosState extends State<Passageiros> {
     });
 
     Map<String, String> queryParams = {
-      'passageiroId': passageiro.id.toString(),
+      'passageiroId': passageiro.idPassageiro.toString(),
     };
 
-    var passageiroId = passageiro.id.toString();
+    var passageiroId = passageiro.idPassageiro.toString();
 
     final url = Uri.http(ip, 'passageiros/$passageiroId');
     final response = http.delete(url);

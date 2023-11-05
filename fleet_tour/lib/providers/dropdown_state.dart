@@ -1,17 +1,21 @@
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 
-class DropdownState extends ChangeNotifier {
-  String? _selectedItem;
+class DropdownState extends GetxController {
+  Rx<String?> _selectedItem = Rx<String?>(null);
 
   DropdownState({String? defaultValue}) {
-    _selectedItem = defaultValue;
-    notifyListeners();
+    _selectedItem.value = defaultValue;
   }
 
-  String? get selectedItem => _selectedItem;
+  String? get selectedItem => _selectedItem.value;
+
+  set selectedItem(String? value) {
+    _selectedItem.value = value;
+  }
 
   void selectItem(String? value) {
-    _selectedItem = value;
-    notifyListeners();
+    _selectedItem.value = value;
+    update(); // This will update all GetBuilder<DropdownState> widgets
   }
 }

@@ -13,7 +13,7 @@ class VeiculoCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
-            veiculo.placa,
+            veiculo.placa!,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 4),
@@ -34,13 +34,13 @@ class VeiculoCard extends StatelessWidget {
             children: [
               const Icon(Icons.bus_alert_sharp),
               const SizedBox(width: 4),
-              Text(veiculo.numeroFrota),
+              Text(veiculo.codFrota!),
               const Spacer(),
               Row(
                 children: [
                   const Icon(Icons.calendar_month_rounded),
                   const SizedBox(width: 4),
-                  Text(veiculo.ano)
+                  Text(veiculo.ano!)
                 ],
               )
             ],
@@ -48,7 +48,7 @@ class VeiculoCard extends StatelessWidget {
           Row(
             children: [
               const Icon(Icons.roundabout_left_outlined),
-              Text(" ${veiculo.km} km"),
+              Text(" ${veiculo.quilometragem} km"),
               const Spacer(),
               Row(
                 children: [

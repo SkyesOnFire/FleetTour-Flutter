@@ -39,7 +39,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
       );
 
       final url = Uri.http(ip, 'empresas');
-      final body = json.encode(newEmpresa.toMap());
+      final body = json.encode(newEmpresa.toJson());
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -70,7 +70,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
             child: Column(
               children: [
                 TextFormField(
-                  16,
+                  maxLength: 16,
                   decoration: const InputDecoration(labelText: 'CNPJ'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -86,7 +86,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration: const InputDecoration(labelText: 'Nome Fantasia'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -99,7 +99,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
-                  35,
+                  maxLength: 35,
                   decoration: const InputDecoration(labelText: 'Razão Social'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -112,7 +112,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration: const InputDecoration(labelText: 'Email'),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -130,7 +130,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration:
                       const InputDecoration(labelText: 'Nome Responsável'),
                   validator: (value) {
@@ -144,7 +144,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
-                  25,
+                  maxLength: 25,
                   decoration:
                       const InputDecoration(labelText: 'Telefone Responsável'),
                   validator: (value) {
@@ -161,7 +161,7 @@ class _NewEmpresaState extends State<NewEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration:
                       const InputDecoration(labelText: 'Email Responsável'),
                   validator: (value) {

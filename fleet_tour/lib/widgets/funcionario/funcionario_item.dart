@@ -13,7 +13,7 @@ class FuncionarioItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
-            funcionario.nome,
+            funcionario.nome!,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 4),
@@ -34,13 +34,13 @@ class FuncionarioItem extends StatelessWidget {
             children: [
               const Icon(Icons.numbers),
               const SizedBox(width: 4),
-              Text(funcionario.telefone),
+              Text(funcionario.telefone!),
               const Spacer(),
               Row(
                 children: [
                   const Icon(Icons.man),
                   const SizedBox(width: 4),
-                  Text(funcionario.genero)
+                  Text(funcionario.genero!)
                 ],
               )
             ],
@@ -54,7 +54,7 @@ class FuncionarioItem extends StatelessWidget {
                 children: [
                   const Icon(Icons.insert_drive_file),
                   const SizedBox(width: 4),
-                  Text("${funcionario.id} ")
+                  Text("${funcionario.idFuncionario} ")
                 ],
               )
             ],

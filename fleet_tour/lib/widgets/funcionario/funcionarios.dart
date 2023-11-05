@@ -35,7 +35,7 @@ class _FuncionariosState extends State<Funcionarios> {
       Map<String, dynamic> rest = item;
       _loadedItems.add(
         Funcionario(
-          id: rest['idFuncionario'],
+          idFuncionario: rest['idFuncionario'],
           funcao: rest['funcao'],
           nome: rest['nome'],
           cpf: rest['cpf'],
@@ -78,7 +78,7 @@ class _FuncionariosState extends State<Funcionarios> {
     if (editedItem != null) {
       setState(() {
         final index =
-            _loadedItems.indexWhere((item) => item.id == editedItem.id);
+            _loadedItems.indexWhere((item) => item.idFuncionario == editedItem.idFuncionario);
         _loadedItems[index] = editedItem;
       });
     }
@@ -86,7 +86,7 @@ class _FuncionariosState extends State<Funcionarios> {
 
   void _removeFuncionario(Funcionario funcionario) {
     setState(() {
-      _loadedItems.removeWhere((item) => item.id == funcionario.id);
+      _loadedItems.removeWhere((item) => item.idFuncionario == funcionario.idFuncionario);
     });
   }
 

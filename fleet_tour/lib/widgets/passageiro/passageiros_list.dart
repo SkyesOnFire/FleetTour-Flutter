@@ -32,7 +32,7 @@ class PassageirosList extends StatelessWidget {
           onDismissed: (direction) {
             onRemoveExpense(passageiroList[index]);
           },
-          child: ExpenseItem(passageiroList[index]),
+          child: PassageiroItem(passageiroList[index]),
         ),
       ),
     );

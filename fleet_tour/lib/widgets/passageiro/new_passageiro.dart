@@ -82,7 +82,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
             child: Column(
               children: [
                 TextFormField(
-                  50,
+                  maxLength: 50,
                   decoration: const InputDecoration(
                     label: Text("Nome"),
                   ),
@@ -104,7 +104,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        11,
+                        maxLength: 11,
                         decoration: const InputDecoration(
                           label: Text("Orgão Emissor"),
                         ),
@@ -126,7 +126,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextFormField(
-                        11,
+                        maxLength: 11,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text("Rg"),
@@ -153,7 +153,7 @@ class _NewPassageiroState extends State<NewPassageiro> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        10,
+                        maxLength: 10,
                         decoration: const InputDecoration(
                           label: Text("Tipo de cliente"),
                         ),
@@ -178,15 +178,11 @@ class _NewPassageiroState extends State<NewPassageiro> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Data de Nascimento:     '),
+                    const Text('Data de Nascimento:     '),
                     Text(
                       _enteredDataNasc == null
                           ? 'Nenhuma data selecionada'
-                          : _enteredDataNasc.year.toString() +
-                              '/' +
-                              _enteredDataNasc.month.toString() +
-                              '/' +
-                              _enteredDataNasc.day.toString(),
+                          : '${_enteredDataNasc.year}/${_enteredDataNasc.month}/${_enteredDataNasc.day}',
                     ),
                     IconButton(
                         onPressed: _presentDatePicker,

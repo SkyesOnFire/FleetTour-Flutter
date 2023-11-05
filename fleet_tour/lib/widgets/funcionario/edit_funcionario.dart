@@ -29,14 +29,14 @@ class _EditFuncionarioState extends State<EditFuncionario> {
   @override
   void initState() {
     super.initState();
-    _editedFuncao = widget.funcionario.funcao;
-    _editedNome = widget.funcionario.nome;
-    _editedCpf = widget.funcionario.cpf;
-    _editedTelefone = widget.funcionario.telefone;
-    _editedGenero = widget.funcionario.genero;
-    _editedRg = widget.funcionario.rg;
-    _editedCnh = widget.funcionario.cnh;
-    _editedDataNasc = widget.funcionario.dataNasc;
+    _editedFuncao = widget.funcionario.funcao!;
+    _editedNome = widget.funcionario.nome!;
+    _editedCpf = widget.funcionario.cpf!;
+    _editedTelefone = widget.funcionario.telefone!;
+    _editedGenero = widget.funcionario.genero!;
+    _editedRg = widget.funcionario.rg!;
+    _editedCnh = widget.funcionario.cnh!;
+    _editedDataNasc = widget.funcionario.dataNasc!;
     _editedVencimentoCnh = widget.funcionario.vencimentoCnh;
     _editedVencimentoCartSaude = widget.funcionario.vencimentoCartSaude;
   }
@@ -49,7 +49,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
     _formKey.currentState!.save();
 
     final updatedFuncionario = Funcionario(
-      id: widget.funcionario.id,
+      idFuncionario: widget.funcionario.idFuncionario,
       funcao: widget.funcionario.funcao,
       nome: widget.funcionario.nome,
       cpf: widget.funcionario.cpf,
@@ -63,14 +63,14 @@ class _EditFuncionarioState extends State<EditFuncionario> {
     );
 
     // Aqui, você pode fazer a chamada para a API para atualizar o funcionário
-    final url = Uri.http(ip, 'funcionarios/${widget.funcionario.id}');
+    final url = Uri.http(ip, 'funcionarios/${widget.funcionario.idFuncionario}');
     final response = await http.put(
       url,
       headers: {
         'Content-Type': 'application/json',
       },
       body: json.encode(updatedFuncionario
-          .toMap()), // Suponha que você tenha um método toMap no seu modelo
+          .toJson()), // Suponha que você tenha um método toMap no seu modelo
     );
     print(response.body);
   }
@@ -94,7 +94,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
           child: ListView(
             children: [
               TextFormField(
-                255,
+                maxLength: 255,
                 initialValue: _editedNome,
                 decoration: InputDecoration(labelText: 'Nome'),
                 onSaved: (value) {
@@ -102,7 +102,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
-                255,
+                maxLength: 255,
                 initialValue: _editedFuncao,
                 decoration: InputDecoration(labelText: 'Função'),
                 onSaved: (value) {
@@ -110,7 +110,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
-                11,
+                maxLength: 11,
                 initialValue: _editedCpf,
                 decoration: InputDecoration(labelText: 'CPF'),
                 onSaved: (value) {
@@ -118,7 +118,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
-                15,
+                maxLength: 15,
                 initialValue: _editedTelefone,
                 decoration: InputDecoration(labelText: 'Telefone'),
                 onSaved: (value) {
@@ -126,7 +126,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
-                15,
+                maxLength: 15,
                 initialValue: _editedGenero,
                 decoration: InputDecoration(labelText: 'Gênero'),
                 onSaved: (value) {
@@ -134,7 +134,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
-                11,
+                maxLength: 11,
                 initialValue: _editedRg,
                 decoration: InputDecoration(labelText: 'RG'),
                 onSaved: (value) {
@@ -142,7 +142,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 },
               ),
               TextFormField(
-                25,
+                maxLength: 25,
                 initialValue: _editedCnh,
                 decoration: InputDecoration(labelText: 'CNH'),
                 onSaved: (value) {

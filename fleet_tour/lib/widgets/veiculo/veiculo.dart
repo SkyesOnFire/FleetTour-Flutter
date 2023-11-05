@@ -6,12 +6,9 @@ import 'package:fleet_tour/configs/server.dart';
 import 'package:fleet_tour/models/veiculo.dart';
 import 'package:fleet_tour/widgets/dropdown_menu.dart';
 import 'package:fleet_tour/widgets/veiculo/veiculo_list.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:fleet_tour/widgets/veiculo/new_veiculo.dart';
-import 'package:fleet_tour/models/pages.dart';
-import 'package:fleet_tour/widgets/veiculo/edit_veiculo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class Veiculos extends StatefulWidget {
   const Veiculos({super.key});
 
@@ -30,54 +27,26 @@ class _VeiculosState extends State<Veiculos> {
 
   void _loadItems() async {
     _loadedItems = [];
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("token");
-    if (token == null) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Sessão expirada, por favor, realize o login novamente.'),
-        ),
-      );
-      Navigator.of(context).pushReplacementNamed('/');
-    }
-    final response = await http.get(Uri.https(ip, 'veiculos'),
+    var storage = GetStorage();
+    final token = storage.read("token");
+    print(token);
+    final response = await http.get(Uri.http(ip, 'veiculos'),
         headers: {'authorization': "Bearer ${token!}"});
-    List<dynamic> listData = json.decode(response.body);
-    for (final item in listData) {
-      Map<String, dynamic> rest = item;
-      _loadedItems.add(
-        Veiculo(
-          id: rest['idVeiculo'],
-          placa: rest["placa"],
-          renavam: rest['renavam'],
-          ano: rest['ano'],
-          km: rest['quilometragem'],
-          numeroFrota: rest['codFrota'],
-          capacidade: rest['capacidade'],
-          taf: rest['taf'],
-          regEstadual: rest['regEstadual'],
-        ),
-      );
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final body = json.decode(response.body);
+      for (var item in body) {
+        _loadedItems.add(Veiculo.fromJson(item));
+      }
     }
     setState(() {});
   }
 
-  void _addItem() async {
-    final newItem = await Navigator.of(context).push<Veiculo>(
-      MaterialPageRoute(
-        builder: (context) => const NewVeiculo(),
-      ),
-    );
+  void _addItem() {
+    Get.toNamed('/new/vehicle');
   }
 
-  void _editVeiculo(Veiculo onibus) async {
-    final newItem = await Navigator.of(context).push<Veiculo>(
-      MaterialPageRoute(
-        builder: (context) => EditVeiculo(veiculo: onibus),
-      ),
-    );
+  void _editVeiculo(Veiculo onibus) {
+    Get.toNamed('edit/vehicles', arguments: onibus);
   }
 
   void _removeVeiculo(Veiculo onibus) {
@@ -86,14 +55,14 @@ class _VeiculosState extends State<Veiculos> {
       _loadedItems.remove(onibus);
     });
 
-    var onibusid = onibus.id.toString();
+    var onibusid = onibus.idVeiculo.toString();
 
     final url = Uri.http(ip, 'veiculos/$onibusid');
     final response = http.delete(url);
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: const Duration(seconds: 3),
-      content: const Text('Veiculo deletado.'),
+      content: const Text('Veículo deletado.'),
       action: SnackBarAction(
           label: 'Desfazer',
           onPressed: () {
@@ -106,8 +75,8 @@ class _VeiculosState extends State<Veiculos> {
                   'placa': onibus.placa,
                   'renavam': onibus.renavam,
                   'ano': onibus.ano,
-                  'quilometragem': onibus.km,
-                  'codFrota': onibus.numeroFrota,
+                  'quilometragem': onibus.quilometragem,
+                  'codFrota': onibus.codFrota,
                   'capacidade': onibus.capacidade,
                   'taf': onibus.taf,
                   'regEstadual': onibus.regEstadual,
@@ -140,12 +109,6 @@ class _VeiculosState extends State<Veiculos> {
         onEditVeiculo: _editVeiculo,
       );
     }
-
-    List<String> menuItems = [];
-
-    menuItems.add(Paginas.Funcionarios.toString());
-    menuItems.add(Paginas.Passageiros.toString());
-    menuItems.add(Paginas.Empresa.toString());
 
     return Scaffold(
       appBar: AppBar(

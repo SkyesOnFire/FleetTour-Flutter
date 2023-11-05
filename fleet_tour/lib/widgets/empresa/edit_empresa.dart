@@ -27,13 +27,13 @@ class _EditEmpresaState extends State<EditEmpresa> {
   @override
   void initState() {
     super.initState();
-    _editedCnpj = widget.empresa.cnpj;
-    _editedNomeFantasia = widget.empresa.nomeFantasia;
-    _editedRazaoSocial = widget.empresa.razaoSocial;
-    _editedEmail = widget.empresa.email;
-    _editedNomeResponsavel = widget.empresa.nomeResponsavel;
-    _editedFoneResponsavel = widget.empresa.foneResponsavel;
-    _editedEmailResponsavel = widget.empresa.emailResponsavel;
+    _editedCnpj = widget.empresa.cnpj!;
+    _editedNomeFantasia = widget.empresa.nomeFantasia!;
+    _editedRazaoSocial = widget.empresa.razaoSocial!;
+    _editedEmail = widget.empresa.email!;
+    _editedNomeResponsavel = widget.empresa.nomeResponsavel!;
+    _editedFoneResponsavel = widget.empresa.foneResponsavel!;
+    _editedEmailResponsavel = widget.empresa.emailResponsavel!;
   }
 
   void _saveItem() async {
@@ -52,7 +52,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
       );
 
       final url = Uri.http(ip, 'empresas/${widget.empresa.id}');
-      final body = json.encode(updatedEmpresa.toMap());
+      final body = json.encode(updatedEmpresa.toJson());
       final response = await http.put(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -83,7 +83,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
             child: Column(
               children: [
                 TextFormField(
-                  25,
+                  maxLength: 25,
                   initialValue: _editedCnpj,
                   decoration: const InputDecoration(labelText: 'CNPJ'),
                   onSaved: (value) {
@@ -91,7 +91,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _editedNomeFantasia,
                   decoration: const InputDecoration(labelText: 'Nome Fantasia'),
                   onSaved: (value) {
@@ -99,7 +99,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _editedRazaoSocial,
                   decoration: const InputDecoration(labelText: 'Razão Social'),
                   onSaved: (value) {
@@ -107,7 +107,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _editedEmail,
                   decoration: const InputDecoration(labelText: 'Email'),
                   onSaved: (value) {
@@ -115,7 +115,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _editedNomeResponsavel,
                   decoration:
                       const InputDecoration(labelText: 'Nome Responsável'),
@@ -124,7 +124,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _editedFoneResponsavel,
                   decoration:
                       const InputDecoration(labelText: 'Telefone Responsável'),
@@ -133,7 +133,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   initialValue: _editedEmailResponsavel,
                   decoration:
                       const InputDecoration(labelText: 'Email Responsável'),

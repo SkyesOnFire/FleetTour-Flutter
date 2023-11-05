@@ -1,33 +1,54 @@
+import 'package:fleet_tour/models/endereco.dart';
+
 class Empresa {
-  final int id;
-  final String cnpj;
-  final String nomeFantasia;
-  final String razaoSocial;
-  final String? inscricaoMunicipal;
-  final String? inscricaoEstadual;
-  final String email;
-  final String? foneEmpresa;
-  final String nomeResponsavel;
-  final String foneResponsavel;
-  final String emailResponsavel;
+  int? id;
+  String? cnpj;
+  String? nomeFantasia;
+  String? razaoSocial;
+  String? inscricaoMunicipal;
+  String? inscricaoEstadual;
+  String? email;
+  String? foneEmpresa;
+  String? nomeResponsavel;
+  String? foneResponsavel;
+  String? emailResponsavel;
+  Endereco? endereco;
 
   Empresa({
-    required this.id,
-    required this.cnpj,
-    required this.nomeFantasia,
-    required this.razaoSocial,
+    this.id,
+    this.cnpj,
+    this.nomeFantasia,
+    this.razaoSocial,
     this.inscricaoMunicipal,
     this.inscricaoEstadual,
-    required this.email,
+    this.email,
     this.foneEmpresa,
-    required this.nomeResponsavel,
-    required this.foneResponsavel,
-    required this.emailResponsavel
+    this.nomeResponsavel,
+    this.foneResponsavel,
+    this.emailResponsavel, 
+    this.endereco,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'idEmpresa': id,
+  factory Empresa.fromJson(Map<String, dynamic> json) {
+    return Empresa(
+      id: json['id'],
+      cnpj: json['cnpj'],
+      nomeFantasia: json['nomeFantasia'],
+      razaoSocial: json['razaoSocial'],
+      inscricaoMunicipal: json['inscricaoMunicipal'],
+      inscricaoEstadual: json['inscricaoEstadual'],
+      email: json['email'],
+      foneEmpresa: json['foneEmpresa'],
+      nomeResponsavel: json['nomeResponsavel'],
+      foneResponsavel: json['foneResponsavel'],
+      emailResponsavel: json['emailResponsavel'],
+      endereco: Endereco.fromJson(json['endereco']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
       'cnpj': cnpj,
       'nomeFantasia': nomeFantasia,
       'razaoSocial': razaoSocial,
@@ -37,7 +58,8 @@ class Empresa {
       'foneEmpresa': foneEmpresa,
       'nomeResponsavel': nomeResponsavel,
       'foneResponsavel': foneResponsavel,
-      'emailResponsavel': emailResponsavel
+      'emailResponsavel': emailResponsavel,
+      'endereco': endereco?.toJson(),
     };
   }
 }

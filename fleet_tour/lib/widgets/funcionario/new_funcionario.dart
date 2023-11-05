@@ -82,7 +82,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
             child: Column(
               children: [
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration: const InputDecoration(
                     label: Text("Função"),
                   ),
@@ -97,7 +97,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration: const InputDecoration(
                     label: Text("Nome"),
                   ),
@@ -112,7 +112,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
-                  11,
+                  maxLength: 11,
                   decoration: const InputDecoration(
                     label: Text("CPF"),
                   ),
@@ -130,7 +130,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
-                  25,
+                  maxLength: 25,
                   decoration: const InputDecoration(
                     label: Text("Telefone"),
                   ),
@@ -148,7 +148,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
-                  25,
+                  maxLength: 25,
                   decoration: const InputDecoration(
                     label: Text("Gênero"),
                   ),
@@ -163,7 +163,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
-                  11,
+                  maxLength: 11,
                   decoration: const InputDecoration(
                     label: Text("RG"),
                   ),
@@ -181,7 +181,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   },
                 ),
                 TextFormField(
-                  25,
+                  maxLength: 25,
                   decoration: const InputDecoration(
                     label: Text("CNH"),
                   ),
@@ -205,11 +205,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                     Text('Data de Nascimento:     '),
                     Text(_enteredDataNasc == null
                         ? 'Nenhuma data selecionada'
-                        : _enteredDataNasc.year.toString() +
-                            '/' +
-                            _enteredDataNasc.month.toString() +
-                            '/' +
-                            _enteredDataNasc.day.toString()),
+                        : '${_enteredDataNasc.year}/${_enteredDataNasc.month}/${_enteredDataNasc.day}'),
                     IconButton(
                         onPressed: _presentDatePicker,
                         icon: const Icon(Icons.calendar_month))

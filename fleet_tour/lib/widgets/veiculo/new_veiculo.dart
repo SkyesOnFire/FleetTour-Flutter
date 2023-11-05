@@ -1,12 +1,15 @@
 import 'dart:convert';
 
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/models/veiculo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:fleet_tour/configs/server.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class NewVeiculo extends StatefulWidget {
   const NewVeiculo({super.key});
@@ -19,34 +22,21 @@ class NewVeiculo extends StatefulWidget {
 
 class _NewVeiculoState extends State<NewVeiculo> {
   final _formKey = GlobalKey<FormState>();
-  var _enteredPlaca = '';
-  var _enteredRenavam = '';
-  var _enteredAno = '';
-  var _enteredKm = '';
-  var _enteredNumeroFrota = '';
-  var _enteredCapacidade = 0;
-  var _enteredTaf = '';
-  var _enteredRegistroEstadual = '';
+  final Veiculo _veiculo = Veiculo();
 
-  void _saveItem() async {
+  void _saveVeiculo() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final url = Uri.https(ip, 'veiculos');
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString("token");
-      final body = json.encode(
-        {
-          'placa': _enteredPlaca,
-          'renavam': _enteredRenavam,
-          'ano': _enteredAno,
-          'quilometragem': _enteredKm,
-          'codFrota': _enteredNumeroFrota,
-          'capacidade': _enteredCapacidade,
-          'taf': _enteredTaf,
-          'regEstadual': _enteredRegistroEstadual,
-          'id_Empresa': 1
-        },
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+        barrierDismissible: false,
       );
+      final url = Uri.http(ip, 'veiculos');
+      var storage = GetStorage();
+      final token = storage.read("token");
+      final body = jsonEncode(_veiculo.toJson());
       final response = await http.post(
         url,
         headers: {
@@ -59,19 +49,35 @@ class _NewVeiculoState extends State<NewVeiculo> {
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).pop();
-      //     // GroceryItem(
-      //     //   id: DateTime.now().toString(),
-      //     //   name: _enteredName,
-      //     //   quantity: _enteredQuantity,
-      //     //   category: _selectedCategory)
+
+      if (response.statusCode == 201) {
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          'Veículo cadastrado com sucesso',
+          'Você será redirecionado para a tela de veículos',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Get.close(1);
+        
+      } else {
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          'Erro ao cadastrar veículo',
+          'Por favor, tente novamente mais tarde',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final placaController = MaskedTextController(mask: "000-0000");
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Cadastrar novo veículo"),
@@ -84,35 +90,40 @@ class _NewVeiculoState extends State<NewVeiculo> {
             child: Column(
               children: [
                 TextFormField(
-                  8,
+                  maxLength: 8,
                   decoration: const InputDecoration(
                     label: Text("Placa"),
                   ),
+                  inputFormatters: [
+                    PlacaVeiculoInputFormatter(),
+                  ],
                   validator: (value) {
+                    value = value!.toUpperCase();
                     if (!RegExp(
                             r"^[A-Z]{3}\-\d{4}$|^[A-Z]{3}\-\d{1}[A-Z]{1}\d{2}$")
-                        .hasMatch(value!)) {
+                        .hasMatch(value)) {
                       return 'Formato de placa inválido.';
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    _enteredPlaca = value!;
+                    value = value!.toUpperCase();
+                    _veiculo.placa = value;
                   },
                 ),
                 TextFormField(
-                  11,
+                  maxLength: 11,
                   decoration: const InputDecoration(
                     label: Text("Renavam"),
                   ),
                   validator: (value) {
-                    if (!RegExp(r"^\d{11}$").hasMatch(value!)) {
-                      return 'Renavam inválido. Deve ter 11 dígitos';
+                    if (!validarRenavam(value!)) {
+                      return 'Renavam inválido.';
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    _enteredRenavam = value!;
+                    _veiculo.renavam = value!;
                   },
                 ),
                 Row(
@@ -120,11 +131,14 @@ class _NewVeiculoState extends State<NewVeiculo> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        4,
+                        maxLength: 4,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text("Ano"),
                         ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         validator: (value) {
                           int? year = int.tryParse(value!);
                           if (year == null ||
@@ -135,26 +149,30 @@ class _NewVeiculoState extends State<NewVeiculo> {
                           return null;
                         },
                         onSaved: (value) {
-                          _enteredAno = value!;
+                          _veiculo.ano = value!;
                         },
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextFormField(
-                        15,
+                        maxLength: 11,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text("Quilometragem"),
                         ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CustomKmInputFormatter(),
+                        ],
                         validator: (value) {
-                          if (!RegExp(r"^\d+$").hasMatch(value!)) {
-                            return 'Quilometragem inválida. Deve ser um número positivo';
+                          if (GetUtils.isLengthLessOrEqual(value, 0)) {
+                            return 'Quilometragem inválida.';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          _enteredKm = value!;
+                          _veiculo.quilometragem = value!;
                         },
                       ),
                     ),
@@ -165,26 +183,27 @@ class _NewVeiculoState extends State<NewVeiculo> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        4,
+                        maxLength: 4,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text("Código de Frota"),
                         ),
                         validator: (value) {
-                          if (GetUtils.isNumericOnly(value!)) {
+                          if (!GetUtils.isNumericOnly(value!) &&
+                              !GetUtils.isLengthEqualTo(value, 4)) {
                             return 'Código de Frota inválido. Deve ter 4 dígitos';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          _enteredNumeroFrota = value!;
+                          _veiculo.codFrota = value!;
                         },
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextFormField(
-                        2,
+                        maxLength: 2,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text("Capacidade"),
@@ -192,12 +211,12 @@ class _NewVeiculoState extends State<NewVeiculo> {
                         validator: (value) {
                           int? capacity = int.tryParse(value!);
                           if (capacity == null || capacity <= 0) {
-                            return 'Capacidade inválida. Deve ser um número positivo';
+                            return 'Capacidade inválida.';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          _enteredCapacidade = int.parse(value!);
+                          _veiculo.capacidade = int.parse(value!);
                         },
                       ),
                     ),
@@ -208,38 +227,164 @@ class _NewVeiculoState extends State<NewVeiculo> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        4,
+                        maxLength: 4,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          label: Text("TAF"),
+                          label: Text("TAF (Número ANTT)"),
                         ),
                         validator: (value) {
-                          if (!RegExp(r"^\d{4}$").hasMatch(value!)) {
+                          if (!GetUtils.isNumericOnly(value!) &&
+                              !GetUtils.isLengthEqualTo(value, 4)) {
                             return 'TAF inválido. Deve ter 4 dígitos';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          _enteredTaf = value!;
+                          _veiculo.taf = value!;
                         },
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextFormField(
-                        4,
+                        maxLength: 4,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          label: Text("Registro Estadual"),
+                          label: Text("Registro Estadual (DER)"),
                         ),
                         validator: (value) {
-                          if (!RegExp(r"^\d{4}$").hasMatch(value!)) {
+                          if (!GetUtils.isNumericOnly(value!) &&
+                              !GetUtils.isLengthEqualTo(value, 4)) {
                             return 'Registro Estadual inválido. Deve ter 4 dígitos';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          _enteredRegistroEstadual = value!;
+                          _veiculo.regEstadual = value!;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          DataInputFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          label: Text("Data da última vistoria"),
+                        ),
+                        validator: (value) {
+                          if (!GetUtils.isLengthEqualTo(value, 10)) {
+                            return 'Data inválida.';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          if (GetUtils.isLengthEqualTo(value, 10)) {
+                            value = value.replaceAll('/', '-');
+                            var splitValue = value.split('-');
+                            value =
+                                '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                            _veiculo.ultimaVistoria = DateTime.parse(value);
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextFormField(
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          DataInputFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          label: Text("Data de emissão do seguro"),
+                        ),
+                        validator: (value) {
+                          if (!GetUtils.isLengthEqualTo(value, 10)) {
+                            return 'Data inválida.';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          if (GetUtils.isLengthEqualTo(value, 10)) {
+                            value = value.replaceAll('/', '-');
+                            var splitValue = value.split('-');
+                            value =
+                                '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                            _veiculo.seguro = DateTime.parse(value);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          DataInputFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          label: Text("Data do licenciamento ANTT"),
+                        ),
+                        validator: (value) {
+                          if (!GetUtils.isLengthEqualTo(value, 10)) {
+                            return 'Data inválida.';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          if (GetUtils.isLengthEqualTo(value, 10)) {
+                            value = value.replaceAll('/', '-');
+                            var splitValue = value.split('-');
+                            value =
+                                '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                            _veiculo.licenciamentoAntt = DateTime.parse(value);
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextFormField(
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          DataInputFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          label: Text("Data do licenciamento DER"),
+                        ),
+                        validator: (value) {
+                          if (!GetUtils.isLengthEqualTo(value, 10)) {
+                            return 'Data inválida.';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          if (GetUtils.isLengthEqualTo(value, 10)) {
+                            value = value.replaceAll('/', '-');
+                            var splitValue = value.split('-');
+                            value =
+                                '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                            _veiculo.licenciamentoDer = DateTime.parse(value);
+                          }
                         },
                       ),
                     ),
@@ -256,7 +401,8 @@ class _NewVeiculoState extends State<NewVeiculo> {
                           },
                           child: const Text('Limpar')),
                       ElevatedButton(
-                          onPressed: _saveItem, child: const Text('Cadastrar'))
+                          onPressed: _saveVeiculo,
+                          child: const Text('Cadastrar'))
                     ],
                   ),
                 )

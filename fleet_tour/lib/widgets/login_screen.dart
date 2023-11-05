@@ -2,16 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fleet_tour/svg_icon.dart';
-import 'package:fleet_tour/widgets/resgisterAddress_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:fleet_tour/widgets/veiculo/veiculo.dart';
-import 'package:flutter_bcrypt/flutter_bcrypt.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,54 +27,59 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      var hash = "{bcrypt}";
-
-      hash += await FlutterBcrypt.hashPw(
-          password: _enteredPassword, salt: r'$2b$06$C6UzMDM.H6dfI/f/IKxGhu');
+      //spinner widget
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+        barrierDismissible: false,
+      );
 
       Map<String, String> uBody = {
         'login': _enteredLogin,
-        'senha': hash,
+        'senha': _enteredPassword,
       };
 
-      final url = Uri.https(ip, 'rest/auth/login');
+      final url = Uri.http(ip, 'rest/auth/login');
       final response = await http.post(url,
-          body: jsonEncode({"login": _enteredLogin, "senha": hash}),
+          body: jsonEncode({"login": _enteredLogin, "senha": _enteredPassword}),
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
           });
 
       if (response.statusCode == 200 && response.body.isNotEmpty) {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final storage = GetStorage();
 
         if (!context.mounted) {
           return;
         }
 
-        prefs.setString("token", response.body);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const Veiculos(),
-          ),
-        );
+        storage.writeInMemory("token", jsonDecode(response.body)['token']);
+
+        Get.close(1);
+
+        Get.to(() => const Veiculos());
       } else {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            duration: Duration(seconds: 3),
-            content: Text('Usuário ou senha incorreta.'),
-          ),
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          "Erro",
+          "Senha ou usuário incorreto.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
       }
     }
   }
 
-  void _doRegister() async {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const registerAdressScreen(),
-      ),
-    );
+  void _doLogin() {
+    Get.toNamed("/vehicles");
+  }
+
+  void _doRegister() {
+    Get.toNamed("/register/address");
   }
 
   @override
@@ -96,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: 300,
                 ),
                 TextFormField(
-                  255,
+                  maxLength: 255,
                   decoration: const InputDecoration(
                     label: Text("Login"),
                   ),
@@ -115,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        255,
+                        maxLength: 255,
                         obscureText: true,
                         decoration: const InputDecoration(
                           label: Text("Senha"),

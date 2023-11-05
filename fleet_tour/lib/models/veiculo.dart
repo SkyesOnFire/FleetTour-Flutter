@@ -1,50 +1,78 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
+import 'package:fleet_tour/models/empresa.dart';
+import 'package:fleet_tour/models/manutencao.dart';
 
 class Veiculo {
-  final int id;
-  final String placa;
-  final String km;
-  final String ano;
-  final String renavam;
-  final String numeroFrota;
-  final int capacidade;
-  final String taf;
-  final String regEstadual;
+  int? idVeiculo;
+  String? placa;
+  String? renavam;
+  String? ano;
+  String? quilometragem;
+  String? codFrota;
+  int? capacidade;
+  String? taf;
+  String? regEstadual;
+  DateTime? ultimaVistoria;
+  DateTime? seguro;
+  DateTime? licenciamentoAntt;
+  DateTime? licenciamentoDer;
+  List<Manutencao>? manutencoes;
+  Empresa? empresa;
 
   Veiculo({
-    required this.id,
-    required this.placa,
-    required this.km,
-    required this.renavam,
-    required this.numeroFrota,
-    required this.capacidade,
-    required this.taf,
-    required this.regEstadual,
-    required this.ano,
+    this.idVeiculo,
+    this.placa,
+    this.renavam,
+    this.ano,
+    this.quilometragem,
+    this.codFrota,
+    this.capacidade,
+    this.taf,
+    this.regEstadual,
+    this.ultimaVistoria,
+    this.seguro,
+    this.licenciamentoAntt,
+    this.licenciamentoDer,
+    this.manutencoes,
+    this.empresa,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+  factory Veiculo.fromJson(Map<String, dynamic> json) {
+    return Veiculo(
+      idVeiculo: json['idVeiculo'],
+      placa: json['placa'],
+      renavam: json['renavam'],
+      ano: json['ano'],
+      quilometragem: json['quilometragem'],
+      codFrota: json['codFrota'],
+      capacidade: json['capacidade'],
+      taf: json['taf'],
+      regEstadual: json['regEstadual'],
+      ultimaVistoria: json['ultimaVistoria'] != null ? DateTime.parse(json['ultimaVistoria']) : null,
+      seguro: json['seguro'] != null ? DateTime.parse(json['seguro']) : null,
+      licenciamentoAntt: json['licenciamentoAntt'] != null ? DateTime.parse(json['licenciamentoAntt']) : null,
+      licenciamentoDer: json['licenciamentoDer'] != null ? DateTime.parse(json['licenciamentoDer']) : null,
+      manutencoes: json['manutencoes'] != null ? (json['manutencoes'] as List).map((i) => Manutencao.fromJson(i)).toList() : null,
+      empresa: json['empresa'] != null ? Empresa.fromJson(json['empresa']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'idVeiculo': idVeiculo,
       'placa': placa,
-      'km': km,
-      'ano': ano,
       'renavam': renavam,
-      'numeroFrota': numeroFrota,
+      'ano': ano,
+      'quilometragem': quilometragem,
+      'codFrota': codFrota,
       'capacidade': capacidade,
       'taf': taf,
       'regEstadual': regEstadual,
+      'ultimaVistoria': ultimaVistoria?.toIso8601String(),
+      'seguro': seguro?.toIso8601String(),
+      'licenciamentoAntt': licenciamentoAntt?.toIso8601String(),
+      'licenciamentoDer': licenciamentoDer?.toIso8601String(),
+      'manutencoes': manutencoes?.map((e) => e.toJson()).toList(),
+      'empresa': empresa?.toJson(),
     };
   }
-
-  Veiculo.fromJson(Map<String, dynamic> json)
-      : id = json['idVeiculo'],
-        placa = json['placa'],
-        km = json['km'],
-        ano = json['ano'],
-        renavam = json['renavam'],
-        numeroFrota = json['numeroFrota'],
-        capacidade = json['capacidade'],
-        taf = json['taf'],
-        regEstadual = json['regEstadual'];
 }
