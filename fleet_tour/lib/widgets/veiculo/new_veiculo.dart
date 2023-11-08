@@ -32,6 +32,7 @@ class _NewVeiculoState extends State<NewVeiculo> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
+        transitionDuration: const Duration(seconds: 2),
       );
       final url = Uri.http(ip, 'veiculos');
       var storage = GetStorage();
@@ -61,7 +62,6 @@ class _NewVeiculoState extends State<NewVeiculo> {
           snackPosition: SnackPosition.BOTTOM,
         );
         Get.close(1);
-        
       } else {
         Get.close(1);
         Get.closeAllSnackbars();

@@ -107,7 +107,7 @@ String formatTelefone(String telefone) {
     return telefone;
   }
   var formatted = '(${telefone.substring(0, 2)}) ';
-  if (telefone.length == 11) {
+  if (telefone.length == 10) {
     formatted += '${telefone.substring(2, 3)} ';
   }
   formatted +=
@@ -119,19 +119,6 @@ String formatTelefone(String telefone) {
 String decodeUtf8String(String nonUtf8String) {
   List<int> bytes = nonUtf8String.codeUnits;
   return utf8.decode(bytes);
-}
-
-String formatCep(String cep) {
-  // Remove any non-digit character.
-  var digits = cep.replaceAll(RegExp(r'\D'), '');
-  
-  // If there are more or fewer than 8 digits, return the original string.
-  if (digits.length != 8) {
-    return cep;
-  }
-
-  // Insert the hyphen after the fifth digit.
-  return digits.replaceRange(5, 5, '-');
 }
 
 String? formatDateForInput(DateTime? date) {
@@ -146,4 +133,60 @@ String? formatDateForInput(DateTime? date) {
 
   // Return the formatted string
   return '$day/$month/$year';
+}
+
+class BrazilianRgInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text;
+
+    if (newText.length > 9) {
+      // If there's a letter at the end, allow it to be uppercase or lowercase 'X'
+      if (newText.length == 10 && (newText.endsWith('X') || newText.endsWith('x'))) {
+        newText = newText.toUpperCase();
+      } else {
+        // If it's not a letter 'X', ensure it's a digit
+        if (newText.length == 10 && !RegExp(r'[0-9X]').hasMatch(newText.substring(9))) {
+          newText = newText.substring(0, 9);
+        } else {
+          // If the length is greater than 10, trim the extra characters
+          newText = newText.substring(0, 10);
+        }
+      }
+    }
+
+    // Remove any characters that are not digits or the letter 'X'
+    newText = newText.replaceAll(RegExp(r'[^0-9X]'), '');
+
+    // Return the new value with the selection at the end of the input
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
+
+String formatCep(String cep) {
+  // Remove any character that isn't a digit
+  String numericString = cep.replaceAll(RegExp(r'[^\d]'), '');
+
+  // Check if the string has exactly 8 digits
+  if (numericString.length != 8) {
+    throw const FormatException("The CEP must contain exactly 8 digits");
+  }
+
+  // Format the string as "12.345-678"
+  String formattedCep = numericString.replaceRange(2, 2, '.')
+                                      .replaceRange(6, 6, '-');
+  return formattedCep;
+}
+
+bool isValidEmail(String email) {
+  final emailRegex = RegExp(
+    r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+    caseSensitive: false,
+    multiLine: false,
+  );
+  return emailRegex.hasMatch(email);
 }

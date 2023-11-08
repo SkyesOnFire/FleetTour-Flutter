@@ -33,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
+        transitionDuration: const Duration(seconds: 2),
       );
 
       Map<String, String> uBody = {
@@ -75,11 +76,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _doLogin() {
-    Get.toNamed("/vehicles");
+    Get.toNamed("/veiculos");
   }
 
   void _doRegister() {
-    Get.toNamed("/register/address");
+    Get.toNamed("/registro/endereco");
   }
 
   @override

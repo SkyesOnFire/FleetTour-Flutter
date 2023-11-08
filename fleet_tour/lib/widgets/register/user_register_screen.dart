@@ -19,11 +19,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final Empresa empresa = Get.arguments;
   final Usuario _usuario = Usuario();
-  final TextEditingController _loginController = TextEditingController();
-  final TextEditingController _senhaController = TextEditingController();
-  final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _cpfController = TextEditingController();
-  final TextEditingController _telefoneController = TextEditingController();
 
   void doRegisterUser(Usuario usuario) async {
     if (_formKey.currentState!.validate()) {
@@ -34,7 +29,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 15),
+        transitionDuration: const Duration(seconds: 2),
       );
 
       usuario.empresa = empresa;
@@ -98,7 +93,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                     );
                   }).toList(),
                   onChanged: (value) {
-                    _usuario.login = value as String?;
+                    _usuario.login = value;
                   },
                   decoration:
                       const InputDecoration(labelText: 'Email para Login'),
@@ -110,7 +105,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   },
                 ),
                 TextFormField(
-                  controller: _senhaController,
                   decoration: const InputDecoration(labelText: 'Senha'),
                   textInputAction: TextInputAction.next,
                   obscureText: true,
@@ -125,7 +119,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   },
                 ),
                 TextFormField(
-                  controller: _nomeController,
                   decoration: const InputDecoration(labelText: 'Nome Completo'),
                   textInputAction: TextInputAction.next,
                   validator: (value) {
@@ -139,7 +132,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   },
                 ),
                 TextFormField(
-                  controller: _cpfController,
                   decoration: const InputDecoration(labelText: 'CPF'),
                   textInputAction: TextInputAction.next,
                   inputFormatters: [
@@ -162,7 +154,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   },
                 ),
                 TextFormField(
-                  controller: _telefoneController,
                   decoration: const InputDecoration(labelText: 'Telefone'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.phone,

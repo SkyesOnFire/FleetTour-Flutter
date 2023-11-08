@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:brasil_fields/brasil_fields.dart';
 import 'package:fleet_tour/data/validationUtils.dart';
 import 'package:fleet_tour/widgets/dropdown_menu.dart';
 import 'package:flutter/material.dart';
@@ -23,18 +22,78 @@ class _EmpresasState extends State<Empresas> {
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadItems();
+    });
   }
 
   void _editCompany() {
-    Get.toNamed('/company/edit', arguments: _empresa);
+    Get.toNamed('/empresas/editar', arguments: _empresa);
   }
 
-  void _editAddress() {
-    Get.toNamed('/company/edit/address', arguments: _empresa);
+  void _editAddress() async {
+    await Get.toNamed('/endereco', arguments: _empresa.endereco);
+    var storage = GetStorage();
+    final endereco = storage.read('temp_endereco');
+
+    if (endereco != null) {
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+        barrierDismissible: false,
+        transitionDuration: const Duration(seconds: 2),
+      );
+
+      _empresa.endereco = endereco;
+      storage.remove('temp_endereco');
+      final token = storage.read("token");
+      final url = Uri.http(ip, 'empresas');
+      final body = json.encode(_empresa.toJson());
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: body,
+      );
+
+      if (!context.mounted) {
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        Get.close(1);
+        Get.snackbar(
+          'Sucesso',
+          'Endereço alterado com sucesso',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.close(1);
+        Get.snackbar(
+          'Erro ao salvar',
+          'Por favor, tente novamente',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+      setState(() {});
+    }
   }
 
   void _loadItems() async {
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
     var storage = GetStorage();
     final token = storage.read("token");
     final url = Uri.http(ip, 'empresas');
@@ -43,6 +102,7 @@ class _EmpresasState extends State<Empresas> {
     });
     _empresa = Empresa.fromJson(
         json.decode(utf8.decode(response.body.runes.toList())));
+    Get.close(1);
     setState(() {});
   }
 

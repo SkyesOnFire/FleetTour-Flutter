@@ -30,6 +30,7 @@ class _EditVeiculoState extends State<EditVeiculo> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
+        transitionDuration: const Duration(seconds: 2),
       );
       var storage = GetStorage();
       final token = storage.read("token");

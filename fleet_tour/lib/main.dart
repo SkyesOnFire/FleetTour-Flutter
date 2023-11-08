@@ -1,7 +1,16 @@
 import 'package:fleet_tour/providers/dropdown_state.dart';
-import 'package:fleet_tour/widgets/register_screen.dart';
-import 'package:fleet_tour/widgets/resgister_address_screen.dart';
-import 'package:fleet_tour/widgets/user_register_screen.dart';
+import 'package:fleet_tour/widgets/empresa/edit_empresa.dart';
+import 'package:fleet_tour/widgets/empresa/empresas.dart';
+import 'package:fleet_tour/widgets/funcionario/edit_funcionario.dart';
+import 'package:fleet_tour/widgets/funcionario/funcionarios.dart';
+import 'package:fleet_tour/widgets/funcionario/new_funcionario.dart';
+import 'package:fleet_tour/widgets/generic/generic_address_screen.dart';
+import 'package:fleet_tour/widgets/passageiro/new_passageiro_compras.dart';
+import 'package:fleet_tour/widgets/passageiro/new_passageiro_turismo.dart';
+import 'package:fleet_tour/widgets/passageiro/passageiros.dart';
+import 'package:fleet_tour/widgets/register/register_screen.dart';
+import 'package:fleet_tour/widgets/register/resgister_address_screen.dart';
+import 'package:fleet_tour/widgets/register/user_register_screen.dart';
 import 'package:fleet_tour/widgets/veiculo/edit_veiculo.dart';
 import 'package:fleet_tour/widgets/veiculo/new_veiculo.dart';
 import 'package:fleet_tour/widgets/veiculo/veiculo.dart';
@@ -62,34 +71,28 @@ void main() {
       ),
       home: const LoginScreen(),
       getPages: [
+        GetPage(name: '/login', page: () => const LoginScreen()),
         GetPage(
-          name: '/login',
-          page: () => const LoginScreen(),
-        ),
+            name: '/registro/endereco',
+            page: () => const RegisterAddressScreen()),
+        GetPage(name: '/registro/empresa', page: () => const RegisterScreen()),
         GetPage(
-          name: '/register/address',
-          page: () => const RegisterAddressScreen(),
-        ),
+            name: '/registro/usuario', page: () => const UserRegisterScreen()),
+        GetPage(name: '/endereco', page: () => const GenericAddressScreen()),
+        GetPage(name: '/veiculos', page: () => const Veiculos()),
+        GetPage(name: '/veiculos/novo', page: () => const NewVeiculo()),
+        GetPage(name: '/veiculos/editar', page: () => const EditVeiculo()),
+        GetPage(name: '/funcionarios', page: () => const Funcionarios()),
+        GetPage(name: '/funcionario/novo', page: () => const NewFuncionario()),
         GetPage(
-          name: '/register/company',
-          page: () => const RegisterScreen(),
-        ),
-        GetPage(
-          name: '/new/vehicle',
-          page: () => const NewVeiculo(),
-        ),
-        GetPage(
-          name: '/vehicles',
-          page: () => const Veiculos(),
-        ),
-        GetPage(
-          name: '/edit/vehicles',
-          page: () => const EditVeiculo(),
-        ),
-        GetPage(
-          name: '/register/user',
-          page: () => const UserRegisterScreen(),
-        ),
+            name: '/funcionarios/editar', page: () => const EditFuncionario()),
+        GetPage(name: '/empresas', page: () => const Empresas()),
+        GetPage(name: '/empresas/editar', page: () => const EditEmpresa()),
+        GetPage(name: '/passageiros', page: () => const Passageiros()),
+        GetPage(name: '/passageiros/novo/compras',
+            page: () => const NewPassageiroCompras()),
+        GetPage(name: '/passageiros/novo/turismo',
+            page: () => const NewPassageiroTurismo()),
       ],
     ),
   );

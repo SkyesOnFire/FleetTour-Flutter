@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
+import 'package:fleet_tour/data/validationUtils.dart';
 import 'package:fleet_tour/models/endereco.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,16 +9,17 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterAddressScreen extends StatefulWidget {
-  const RegisterAddressScreen({super.key});
+class GenericAddressScreen extends StatefulWidget {
+  const GenericAddressScreen({super.key});
 
   @override
-  State<RegisterAddressScreen> createState() => _RegisterAddressScreenState();
+  State<GenericAddressScreen> createState() => _GenericAddressScreenState();
 }
 
-class _RegisterAddressScreenState extends State<RegisterAddressScreen> {
+class _GenericAddressScreenState extends State<GenericAddressScreen> {
   final _formKey = GlobalKey<FormState>();
-  final Endereco _endereco = Endereco();
+  Endereco _endereco = Endereco();
+  final TextEditingController _cepController = TextEditingController();
   final TextEditingController _bairroController = TextEditingController();
   final TextEditingController _cidadeController = TextEditingController();
   final TextEditingController _estadoController = TextEditingController();
@@ -26,8 +28,24 @@ class _RegisterAddressScreenState extends State<RegisterAddressScreen> {
   final TextEditingController _paisController = TextEditingController();
   final TextEditingController _numeroController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    Get.arguments != null ? _endereco = Get.arguments : _endereco = Endereco();
+    _cepController.text = _endereco.cep != null ? formatCep(_endereco.cep!) : '';
+    _bairroController.text = _endereco.bairro ?? '';
+    _cidadeController.text = _endereco.cidade ?? '';
+    _estadoController.text = _endereco.estado ?? '';
+    _ruaController.text = _endereco.rua ?? '';
+    _complementoController.text = _endereco.complemento ?? '';
+    _paisController.text = _endereco.pais ?? '';
+    _numeroController.text = _endereco.numero ?? '';
+  }
+
   void sendAddressToStorage(Endereco endereco) async {
-    Get.toNamed('/register/company', arguments: endereco);
+    var storage = GetStorage();
+    await storage.write('temp_endereco', endereco);
+    Get.close(1);
   }
 
   void _consultarCep() async {
@@ -66,11 +84,9 @@ class _RegisterAddressScreenState extends State<RegisterAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _cepController = TextEditingController();
-
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Qual o endereço da empresa?"),
+          title: const Text("Cadastro de Endereço"),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -79,6 +95,7 @@ class _RegisterAddressScreenState extends State<RegisterAddressScreen> {
               key: _formKey,
               child: Column(children: [
                 TextFormField(
+                  controller: _cepController,
                   maxLength: 10,
                   decoration: const InputDecoration(labelText: 'CEP'),
                   inputFormatters: [
@@ -206,22 +223,28 @@ class _RegisterAddressScreenState extends State<RegisterAddressScreen> {
                     _endereco.pais = value;
                   },
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            sendAddressToStorage(_endereco);
-                          }
-                        },
-                        child: const Text('Continuar Cadastro')),
-                  ],
-                )
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              var storage = GetStorage();
+                              storage.remove('temp_endereco');
+                              Get.close(1);
+                            },
+                            child: const Text('Cancelar')),
+                        ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                sendAddressToStorage(_endereco);
+                              }
+                            },
+                            child: const Text('Salvar')),
+                      ],
+                    ))
               ]),
             ),
           ),

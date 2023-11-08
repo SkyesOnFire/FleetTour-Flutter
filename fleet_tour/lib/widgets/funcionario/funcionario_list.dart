@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fleet_tour/models/funcionario.dart';  // Update with your model
-import 'funcionario_item.dart';  // Import the FuncionarioItem widget
+import 'package:fleet_tour/models/funcionario.dart'; // Update with your model
+import 'funcionario_card.dart'; // Import the FuncionarioCard widget
 
 class FuncionariosList extends StatelessWidget {
   final List<Funcionario> funcionarios;
@@ -28,7 +28,7 @@ class FuncionariosList extends StatelessWidget {
           onDismissed: (direction) {
             onDelete(funcionarios[index]);
           },
-          child: FuncionarioItem(funcionario: funcionarios[index]),
+          child: FuncionarioCard(funcionario: funcionarios[index]),
         ),
       ),
     );

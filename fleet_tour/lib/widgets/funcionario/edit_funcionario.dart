@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:fleet_tour/data/validationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:fleet_tour/configs/server.dart';
 import 'package:fleet_tour/models/funcionario.dart'; // Atualize com o seu modelo
 
 class EditFuncionario extends StatefulWidget {
-  final Funcionario funcionario;
-
-  EditFuncionario({required this.funcionario});
+  const EditFuncionario({Key? key}) : super(key: key);
 
   @override
   _EditFuncionarioState createState() => _EditFuncionarioState();
@@ -15,144 +18,257 @@ class EditFuncionario extends StatefulWidget {
 
 class _EditFuncionarioState extends State<EditFuncionario> {
   final _formKey = GlobalKey<FormState>();
-  late String _editedFuncao;
-  late String _editedNome;
-  late String _editedCpf;
-  late String _editedTelefone;
-  late String _editedGenero;
-  late String _editedRg;
-  late String _editedCnh;
-  late DateTime _editedDataNasc;
-  late DateTime? _editedVencimentoCnh;
-  late DateTime? _editedVencimentoCartSaude;
+  final Funcionario _funcionario = Get.arguments;
 
   @override
   void initState() {
     super.initState();
-    _editedFuncao = widget.funcionario.funcao!;
-    _editedNome = widget.funcionario.nome!;
-    _editedCpf = widget.funcionario.cpf!;
-    _editedTelefone = widget.funcionario.telefone!;
-    _editedGenero = widget.funcionario.genero!;
-    _editedRg = widget.funcionario.rg!;
-    _editedCnh = widget.funcionario.cnh!;
-    _editedDataNasc = widget.funcionario.dataNasc!;
-    _editedVencimentoCnh = widget.funcionario.vencimentoCnh;
-    _editedVencimentoCartSaude = widget.funcionario.vencimentoCartSaude;
   }
 
-  void _saveForm() async {
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      return;
+  void _saveItem() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+        barrierDismissible: false,
+        transitionDuration: const Duration(seconds: 2),
+      );
+      var storage = GetStorage();
+      final token = storage.read("token");
+      final url = Uri.http(ip, 'veiculos/${_funcionario.idFuncionario}');
+      final body = json.encode(_funcionario.toJson());
+      final response = await http.put(
+        url,
+        headers: {
+          "authorization": "Bearer ${token!}",
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+
+      if (!context.mounted) {
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          'Sucesso',
+          'Funcionário editado com sucesso.',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Get.close(1);
+      } else {
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          'Erro',
+          'Erro ao editar funcionário.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     }
-    _formKey.currentState!.save();
-
-    final updatedFuncionario = Funcionario(
-      idFuncionario: widget.funcionario.idFuncionario,
-      funcao: widget.funcionario.funcao,
-      nome: widget.funcionario.nome,
-      cpf: widget.funcionario.cpf,
-      telefone: widget.funcionario.telefone,
-      genero: widget.funcionario.genero,
-      rg: widget.funcionario.rg,
-      cnh: widget.funcionario.cnh,
-      dataNasc: widget.funcionario.dataNasc,
-      vencimentoCnh: widget.funcionario.vencimentoCnh,
-      vencimentoCartSaude: widget.funcionario.vencimentoCartSaude,
-    );
-
-    // Aqui, você pode fazer a chamada para a API para atualizar o funcionário
-    final url = Uri.http(ip, 'funcionarios/${widget.funcionario.idFuncionario}');
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(updatedFuncionario
-          .toJson()), // Suponha que você tenha um método toMap no seu modelo
-    );
-    print(response.body);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Funcionário'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _saveForm,
-          ),
-        ],
+        title: const Text("Editar funcionário"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                maxLength: 255,
-                initialValue: _editedNome,
-                decoration: InputDecoration(labelText: 'Nome'),
-                onSaved: (value) {
-                  _editedNome = value!;
-                },
-              ),
-              TextFormField(
-                maxLength: 255,
-                initialValue: _editedFuncao,
-                decoration: InputDecoration(labelText: 'Função'),
-                onSaved: (value) {
-                  _editedFuncao = value!;
-                },
-              ),
-              TextFormField(
-                maxLength: 11,
-                initialValue: _editedCpf,
-                decoration: InputDecoration(labelText: 'CPF'),
-                onSaved: (value) {
-                  _editedCpf = value!;
-                },
-              ),
-              TextFormField(
-                maxLength: 15,
-                initialValue: _editedTelefone,
-                decoration: InputDecoration(labelText: 'Telefone'),
-                onSaved: (value) {
-                  _editedTelefone = value!;
-                },
-              ),
-              TextFormField(
-                maxLength: 15,
-                initialValue: _editedGenero,
-                decoration: InputDecoration(labelText: 'Gênero'),
-                onSaved: (value) {
-                  _editedGenero = value!;
-                },
-              ),
-              TextFormField(
-                maxLength: 11,
-                initialValue: _editedRg,
-                decoration: InputDecoration(labelText: 'RG'),
-                onSaved: (value) {
-                  _editedRg = value!;
-                },
-              ),
-              TextFormField(
-                maxLength: 25,
-                initialValue: _editedCnh,
-                decoration: InputDecoration(labelText: 'CNH'),
-                onSaved: (value) {
-                  _editedCnh = value!;
-                },
-              ),
-              // Adicione um widget para selecionar a data de nascimento aqui
-              // Adicione um widget para selecionar a data de vencimento da CNH aqui
-              // Adicione um widget para selecionar a data de vencimento do cartão de saúde aqui
-            ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                DropdownButtonFormField(
+                  value: _funcionario.funcao,
+                  items: ['Motorista', 'Guia'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: null,
+                  decoration:
+                      const InputDecoration(labelText: 'Função do funcionário'),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Selecione uma funcão para o funcionário';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  initialValue: _funcionario.nome,
+                  decoration: const InputDecoration(label: Text("Nome")),
+                  onSaved: (value) => _funcionario.nome = value,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Digite o nome do funcionário';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  initialValue: _funcionario.cpf,
+                  decoration: const InputDecoration(label: Text("CPF")),
+                  maxLength: 15,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    CpfInputFormatter(),
+                  ],
+                  onSaved: (value) => _funcionario.cpf = value,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Digite o CPF do funcionário';
+                    }
+                    if (!CPFValidator.isValid(value)) {
+                      return 'CPF inválido';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  initialValue: _funcionario.telefone,
+                  decoration: const InputDecoration(label: Text("Telefone")),
+                  maxLength: 15,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    TelefoneInputFormatter(),
+                  ],
+                  onSaved: (value) => _funcionario.telefone = value,
+                ),
+                DropdownButtonFormField(
+                  value: _funcionario.genero,
+                  items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: null,
+                  decoration: const InputDecoration(labelText: 'Gênero'),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Escolha um gênero';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  initialValue: _funcionario.rg,
+                  decoration: const InputDecoration(label: Text("RG")),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    BrazilianRgInputFormatter(),
+                  ],
+                  onSaved: (value) => _funcionario.rg = value,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Digite o RG do funcionário';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  initialValue: _funcionario.cnh,
+                  decoration: const InputDecoration(label: Text("CNH")),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  onSaved: (value) => _funcionario.cnh = value,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Digite a CNH do funcionário';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  initialValue: formatDateForInput(_funcionario.dataNasc),
+                  decoration:
+                      const InputDecoration(label: Text("Data de Nascimento")),
+                  onSaved: (value) {
+                    if (GetUtils.isLengthEqualTo(value, 10)) {
+                      value = value!.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                      _funcionario.dataNasc = DateTime.parse(value);
+                    }
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
+                  ],
+                ),
+                TextFormField(
+                  initialValue: formatDateForInput(_funcionario.vencimentoCnh),
+                  decoration:
+                      const InputDecoration(label: Text("Vencimento da CNH")),
+                  onSaved: (value) {
+                    if (GetUtils.isLengthEqualTo(value, 10)) {
+                      value = value!.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                      _funcionario.vencimentoCnh = DateTime.parse(value);
+                    }
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
+                  ],
+                ),
+                TextFormField(
+                  initialValue:
+                      formatDateForInput(_funcionario.vencimentoCartSaude),
+                  decoration: const InputDecoration(
+                      label: Text("Vencimento Cartão Saúde")),
+                  onSaved: (value) {
+                    if (GetUtils.isLengthEqualTo(value, 10)) {
+                      value = value!.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                      _funcionario.vencimentoCartSaude = DateTime.parse(value);
+                    }
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => Get.close(1),
+                        child: const Text('Cancelar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _saveItem,
+                        child: const Text('Salvar'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

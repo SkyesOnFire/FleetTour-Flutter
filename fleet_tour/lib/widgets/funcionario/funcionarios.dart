@@ -1,13 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:fleet_tour/models/pages.dart';
 import 'package:fleet_tour/widgets/dropdown_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:fleet_tour/configs/server.dart'; // Update with your server config
-import 'package:fleet_tour/models/funcionario.dart'; // Update with your model
-import 'package:fleet_tour/widgets/funcionario/new_funcionario.dart';
-import 'package:fleet_tour/widgets/funcionario/edit_funcionario.dart';
+import 'package:fleet_tour/configs/server.dart';
+import 'package:fleet_tour/models/funcionario.dart';
 import 'package:fleet_tour/widgets/funcionario/funcionario_list.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class Funcionarios extends StatefulWidget {
@@ -23,71 +23,113 @@ class _FuncionariosState extends State<Funcionarios> {
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadItems();
+    });
   }
 
   void _loadItems() async {
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
     _loadedItems = [];
+    var storage = GetStorage();
+    final token = storage.read("token");
     final url = Uri.http(ip, 'funcionarios');
-    final response = await http.get(url);
-    List<dynamic> listData = json.decode(response.body);
-    for (final item in listData) {
-      Map<String, dynamic> rest = item;
-      _loadedItems.add(
-        Funcionario(
-          idFuncionario: rest['idFuncionario'],
-          funcao: rest['funcao'],
-          nome: rest['nome'],
-          cpf: rest['cpf'],
-          telefone: rest['telefone'],
-          genero: rest['genero'],
-          rg: rest['rg'],
-          cnh: rest['cnh'],
-          dataNasc: DateTime.parse(rest['dataNasc']),
-          vencimentoCnh: rest['vencimentoCnh'] != null
-              ? DateTime.parse(rest['vencimentoCnh'])
-              : null,
-          vencimentoCartSaude: rest['vencimentoCartSaude'] != null
-              ? DateTime.parse(rest['vencimentoCartSaude'])
-              : null,
-        ),
-      );
+    final response =
+        await http.get(url, headers: {'authorization': "Bearer ${token!}"});
+    if (response.statusCode == 200 || response.body.isNotEmpty) {
+      final body = json.decode(response.body);
+      for (var item in body) {
+        _loadedItems.add(Funcionario.fromJson(item));
+      }
     }
+    Get.close(1);
     setState(() {});
   }
 
   void _addItem() async {
-    final newItem = await Navigator.of(context).push<Funcionario>(
-      MaterialPageRoute(
-        builder: (context) => const NewFuncionario(),
-      ),
-    );
-    if (newItem != null) {
-      setState(() {
-        _loadedItems.add(newItem);
-      });
-    }
+    await Get.toNamed('/funcionario/novo');
+    _loadItems();
   }
 
-  void _editFuncionario(Funcionario funcionario) async {
-    final editedItem = await Navigator.of(context).push<Funcionario>(
-      MaterialPageRoute(
-        builder: (context) => EditFuncionario(funcionario: funcionario),
-      ),
-    );
-    if (editedItem != null) {
-      setState(() {
-        final index =
-            _loadedItems.indexWhere((item) => item.idFuncionario == editedItem.idFuncionario);
-        _loadedItems[index] = editedItem;
-      });
-    }
+  void _editFuncionario(Funcionario funcionario) {
+    Get.toNamed('/funcionarios/editar', arguments: funcionario);
+    _loadItems();
   }
 
-  void _removeFuncionario(Funcionario funcionario) {
+  void _showDeleteConfirmationDialog(Funcionario funcionario) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Confirmação de exclusão'),
+        content: const Text('Tem certeza que deseja deletar este funcionário?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              _loadItems();
+              Get.back();
+            },
+          ),
+          TextButton(
+            child: const Text(
+              'Deletar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Get.back();
+              _removeFuncionario(funcionario);
+            },
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(seconds: 2),
+    );
+  }
+
+  void _removeFuncionario(Funcionario funcionario) async {
+    final funcionarioIndex = _loadedItems.indexOf(funcionario);
     setState(() {
-      _loadedItems.removeWhere((item) => item.idFuncionario == funcionario.idFuncionario);
+      _loadedItems.remove(funcionario);
     });
+
+    var funcionarioId = funcionario.idFuncionario.toString();
+    var storage = GetStorage();
+    final token = await storage.read("token");
+    final url = Uri.http(ip, 'funcionarios/$funcionarioId');
+    final response = await http.delete(url,
+        headers: {HttpHeaders.authorizationHeader: "Bearer ${token!}"});
+    if (response.statusCode == 204) {
+      Get.closeAllSnackbars();
+      Get.snackbar(
+        'Funcionário deletado',
+        'O funcionário foi deletado com sucesso',
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      setState(() {
+        _loadedItems.insert(funcionarioIndex, funcionario);
+      });
+      Get.closeAllSnackbars();
+      Get.snackbar(
+        'Erro ao deletar funcionário',
+        'Por favor, tente novamente mais tarde',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
@@ -99,16 +141,10 @@ class _FuncionariosState extends State<Funcionarios> {
     if (_loadedItems.isNotEmpty) {
       mainContent = FuncionariosList(
         funcionarios: _loadedItems,
-        onDelete: _removeFuncionario,
+        onDelete: _showDeleteConfirmationDialog,
         onEdit: _editFuncionario,
       );
     }
-
-    List<String> menuItems = [];
-
-    menuItems.add(Paginas.Frota.toString());
-    menuItems.add(Paginas.Passageiros.toString());
-    menuItems.add(Paginas.Empresa.toString());
 
     return Scaffold(
       appBar: AppBar(

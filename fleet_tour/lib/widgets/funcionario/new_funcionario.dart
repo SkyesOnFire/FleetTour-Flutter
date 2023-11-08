@@ -1,70 +1,75 @@
 import 'dart:convert';
+
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:fleet_tour/configs/server.dart';
+import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/models/funcionario.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:fleet_tour/configs/server.dart'; // Update with your server config
-import 'package:fleet_tour/models/funcionario.dart'; // Update with your model
 
 class NewFuncionario extends StatefulWidget {
   const NewFuncionario({super.key});
 
   @override
-  State<NewFuncionario> createState() => _NewFuncionarioState();
+  _NewFuncionarioState createState() => _NewFuncionarioState();
 }
 
 class _NewFuncionarioState extends State<NewFuncionario> {
-  final _formKey = GlobalKey<FormState>();
-  var _enteredFuncao = '';
-  var _enteredNome = '';
-  var _enteredCpf = '';
-  var _enteredTelefone = '';
-  var _enteredGenero = '';
-  var _enteredRg = '';
-  var _enteredCnh = '';
-  DateTime _enteredDataNasc = DateTime.now();
-  DateTime? _enteredVencimentoCnh;
-  DateTime? _enteredVencimentoCartSaude;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Funcionario _funcionario = Funcionario();
 
-  void _presentDatePicker() async {
-    final now = DateTime.now();
-    final pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime(now.year - 20),
-        firstDate: DateTime(1950),
-        lastDate: DateTime(now.year));
-    setState(() {
-      _enteredDataNasc = pickedDate!;
-    });
-  }
+  void _saveFuncionario() async {
+    final form = _formKey.currentState;
+    if (form!.validate()) {
+      form.save();
 
-  void _saveItem() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+        barrierDismissible: false,
+        transitionDuration: const Duration(seconds: 2),
+      );
+
+      var storage = GetStorage();
+      final token = storage.read("token");
       final url = Uri.http(ip, 'funcionarios');
-      final body = json.encode(
-        {
-          'funcao': _enteredFuncao,
-          'nome': _enteredNome,
-          'cpf': _enteredCpf,
-          'telefone': _enteredTelefone,
-          'genero': _enteredGenero,
-          'rg': _enteredRg,
-          'cnh': _enteredCnh,
-          'dataNasc': _enteredDataNasc.toIso8601String(),
-          'vencimentoCnh': _enteredVencimentoCnh?.toIso8601String(),
-          'vencimentoCartSaude': _enteredVencimentoCartSaude?.toIso8601String(),
-        },
-      );
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: body,
-      );
+      final response = await http.post(url,
+          headers: {
+            'authorization': "Bearer ${token!}",
+            'Content-Type': 'application/json'
+          },
+          body: json.encode(_funcionario.toJson()));
+
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).pop();
+
+      if (response.statusCode == 201) {
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          'Funcionário cadastrado com sucesso',
+          'Você será redirecionado para a lista de funcionários',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Get.close(1);
+      } else {
+        Get.close(1);
+        Get.closeAllSnackbars();
+        Get.snackbar(
+          'Erro ao cadastrar funcionário',
+          'Por favor, tente novamente mais tarde',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     }
   }
 
@@ -81,140 +86,174 @@ class _NewFuncionarioState extends State<NewFuncionario> {
             key: _formKey,
             child: Column(
               children: [
-                TextFormField(
-                  maxLength: 255,
-                  decoration: const InputDecoration(
-                    label: Text("Função"),
-                  ),
+                DropdownButtonFormField(
+                  items: ['Motorista', 'Guia'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    _funcionario.funcao = value;
+                  },
+                  decoration:
+                      const InputDecoration(labelText: 'Função do funcionário'),
                   validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, insira uma função';
+                    if (value == null) {
+                      return 'Selecione uma funcão para o funcionário';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _enteredFuncao = value!;
-                  },
                 ),
                 TextFormField(
-                  maxLength: 255,
-                  decoration: const InputDecoration(
-                    label: Text("Nome"),
-                  ),
+                  decoration: const InputDecoration(label: Text("Nome")),
+                  onSaved: (value) => _funcionario.nome = value,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Por favor, insira um nome';
+                      return 'Digite o nome do funcionário';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _enteredNome = value!;
-                  },
                 ),
                 TextFormField(
-                  maxLength: 11,
-                  decoration: const InputDecoration(
-                    label: Text("CPF"),
-                  ),
+                  decoration: const InputDecoration(label: Text("CPF")),
+                  maxLength: 15,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    CpfInputFormatter(),
+                  ],
+                  onSaved: (value) => _funcionario.cpf = value,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Por favor, insira um CPF';
+                      return 'Digite o CPF do funcionário';
                     }
-                    if (!RegExp(r"^\d{11}$").hasMatch(value)) {
+                    if (!CPFValidator.isValid(value)) {
                       return 'CPF inválido';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _enteredCpf = value!;
-                  },
                 ),
                 TextFormField(
-                  maxLength: 25,
-                  decoration: const InputDecoration(
-                    label: Text("Telefone"),
-                  ),
+                  decoration: const InputDecoration(label: Text("Telefone")),
+                  maxLength: 15,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    TelefoneInputFormatter(),
+                  ],
+                  onSaved: (value) => _funcionario.telefone = value,
+                ),
+                DropdownButtonFormField(
+                  items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    _funcionario.genero = value;
+                  },
+                  decoration: const InputDecoration(labelText: 'Gênero'),
                   validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, insira um telefone';
-                    }
-                    if (!RegExp(r"^\d+$").hasMatch(value)) {
-                      return 'Telefone inválido';
+                    if (value == null) {
+                      return 'Escolha um gênero';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _enteredTelefone = value!;
-                  },
                 ),
                 TextFormField(
-                  maxLength: 25,
-                  decoration: const InputDecoration(
-                    label: Text("Gênero"),
-                  ),
+                  decoration: const InputDecoration(label: Text("RG")),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    BrazilianRgInputFormatter(),
+                  ],
+                  onSaved: (value) => _funcionario.rg = value,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Por favor, insira um gênero';
+                      return 'Digite o RG do funcionário';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _enteredGenero = value!;
-                  },
                 ),
                 TextFormField(
-                  maxLength: 11,
-                  decoration: const InputDecoration(
-                    label: Text("RG"),
-                  ),
+                  decoration: const InputDecoration(label: Text("CNH")),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  onSaved: (value) => _funcionario.cnh = value,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Por favor, insira um RG';
-                    }
-                    if (!RegExp(r"^\d+$").hasMatch(value)) {
-                      return 'RG inválido';
+                      return 'Digite a CNH do funcionário';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _enteredRg = value!;
-                  },
                 ),
                 TextFormField(
-                  maxLength: 25,
-                  decoration: const InputDecoration(
-                    label: Text("CNH"),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, insira uma CNH';
-                    }
-                    if (!RegExp(r"^\d+$").hasMatch(value)) {
-                      return 'CNH inválida';
-                    }
-                    return null;
-                  },
+                  decoration:
+                      const InputDecoration(label: Text("Data de Nascimento")),
                   onSaved: (value) {
-                    _enteredCnh = value!;
+                    if (GetUtils.isLengthEqualTo(value, 10)) {
+                      value = value!.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                      _funcionario.dataNasc = DateTime.parse(value);
+                    }
                   },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Data de Nascimento:     '),
-                    Text(_enteredDataNasc == null
-                        ? 'Nenhuma data selecionada'
-                        : '${_enteredDataNasc.year}/${_enteredDataNasc.month}/${_enteredDataNasc.day}'),
-                    IconButton(
-                        onPressed: _presentDatePicker,
-                        icon: const Icon(Icons.calendar_month))
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
                   ],
                 ),
-                ElevatedButton(
-                  onPressed: _saveItem,
-                  child: const Text('Salvar'),
-                )
+                TextFormField(
+                  decoration:
+                      const InputDecoration(label: Text("Vencimento da CNH")),
+                  onSaved: (value) {
+                    if (GetUtils.isLengthEqualTo(value, 10)) {
+                      value = value!.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                      _funcionario.vencimentoCnh = DateTime.parse(value);
+                    }
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
+                  ],
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                      label: Text("Vencimento Cartão Saúde")),
+                  onSaved: (value) {
+                    if (GetUtils.isLengthEqualTo(value, 10)) {
+                      value = value!.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                      _funcionario.vencimentoCartSaude = DateTime.parse(value);
+                    }
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _formKey.currentState!.reset(),
+                        child: const Text('Limpar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _saveFuncionario,
+                        child: const Text('Cadastrar'),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:fleet_tour/configs/server.dart';
+import 'package:fleet_tour/data/validationUtils.dart';
 import 'package:fleet_tour/models/empresa.dart';
 import 'package:fleet_tour/models/endereco.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         _nomeFantasiaController.text = _empresa.nomeFantasia ?? '';
         _razaoSocialController.text = _empresa.razaoSocial ?? '';
-        _foneEmpresaController.text = _empresa.foneEmpresa ?? '';
+        _foneEmpresaController.text = _empresa.foneEmpresa!.isNotEmpty
+            ? formatTelefone(_empresa.foneEmpresa!)
+            : '';
         _emailController.text = _empresa.email ?? '';
       } else {
         Get.closeAllSnackbars();
@@ -80,8 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void nextRegisterScreen(Empresa empresa) async {
-    
-    Get.toNamed('/register/user', arguments: _empresa);
+    Get.toNamed('/registro/usuario', arguments: empresa);
   }
 
   @override

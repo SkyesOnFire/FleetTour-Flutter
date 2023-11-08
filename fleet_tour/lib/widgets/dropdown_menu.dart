@@ -40,7 +40,6 @@ class _DropdownMenuButtonState extends State<DropdownMenuButton> {
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
-            
             value: dropdownState.selectedItem, // Use .value for Rx types
             icon: const Icon(Icons.arrow_downward),
             focusColor: Color.fromARGB(255, 255, 255, 255),
@@ -62,13 +61,13 @@ class _DropdownMenuButtonState extends State<DropdownMenuButton> {
                   newValue); // This should update the observable variable
 
               if (newValue == "Gerenciamento de Frota") {
-                Get.toNamed('/vehicles'); // Usando Get.to() para navegação
+                Get.offNamed('/veiculos'); // Usando Get.to() para navegação
               } else if (newValue == "Gerenciamento de Passageiros") {
-                Get.to(() => const Passageiros());
+                Get.offNamed('/passageiros');
               } else if (newValue == "Gerenciamento de Funcionarios") {
-                Get.to(() => const Funcionarios());
+                Get.offNamed('/funcionarios');
               } else if (newValue == "Informações da Empresa") {
-                Get.to(() => const Empresas());
+                Get.offNamed('/empresas');
               }
             },
           ), // Your DropdownButton widget

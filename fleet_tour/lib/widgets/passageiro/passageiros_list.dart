@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 
-import 'passageiro_item.dart';
+import 'passageiro_card.dart';
 
 class PassageirosList extends StatelessWidget {
   const PassageirosList({
     Key? key,
     required this.passageiroList,
-    required this.onRemoveExpense,
-    required this.onEditExpense,
+    required this.onRemovePassageiro,
+    required this.onEditPassageiro,
   }) : super(key: key);
 
   final List<Passageiro> passageiroList;
-  final void Function(Passageiro passageiro) onRemoveExpense;
-  final void Function(Passageiro passageiro) onEditExpense;
+  final void Function(Passageiro passageiro) onRemovePassageiro;
+  final void Function(Passageiro passageiro) onEditPassageiro;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class PassageirosList extends StatelessWidget {
       itemCount: passageiroList.length,
       itemBuilder: (ctx, index) => GestureDetector(
         onTap: () {
-          onEditExpense(passageiroList[index]);
+          onEditPassageiro(passageiroList[index]);
         },
         child: Dismissible(
           key: ValueKey(passageiroList[index]),
@@ -30,9 +30,9 @@ class PassageirosList extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 8),
           ),
           onDismissed: (direction) {
-            onRemoveExpense(passageiroList[index]);
+            onRemovePassageiro(passageiroList[index]);
           },
-          child: PassageiroItem(passageiroList[index]),
+          child: PassageiroCard(passageiro: passageiroList[index]),
         ),
       ),
     );

@@ -9,6 +9,7 @@ import 'package:fleet_tour/widgets/veiculo/veiculo_list.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+
 class Veiculos extends StatefulWidget {
   const Veiculos({super.key});
 
@@ -22,14 +23,22 @@ class _VeiculosState extends State<Veiculos> {
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadItems();
+    });
   }
 
   void _loadItems() async {
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
     _loadedItems = [];
     var storage = GetStorage();
     final token = storage.read("token");
-    print(token);
     final response = await http.get(Uri.http(ip, 'veiculos'),
         headers: {'authorization': "Bearer ${token!}"});
     if (response.statusCode == 200 && response.body.isNotEmpty) {
@@ -38,62 +47,88 @@ class _VeiculosState extends State<Veiculos> {
         _loadedItems.add(Veiculo.fromJson(item));
       }
     }
+    Get.close(1);
     setState(() {});
   }
 
   void _addItem() {
-    Get.toNamed('/new/vehicle');
+    Get.toNamed('/veiculos/novo');
+    _loadItems();
   }
 
   void _editVeiculo(Veiculo onibus) {
-    Get.toNamed('edit/vehicles', arguments: onibus);
+    Get.toNamed('/veiculos/editar', arguments: onibus);
+    _loadItems();
   }
 
-  void _removeVeiculo(Veiculo onibus) {
+  void _showDeleteConfirmationDialog(Veiculo veiculo) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Confirmação de exclusão'),
+        content: const Text('Tem certeza que deseja deletar este veículo?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              _loadItems();
+              Get.back();
+            },
+          ),
+          TextButton(
+            child: const Text(
+              'Deletar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Get.back();
+              _removeVeiculo(veiculo);
+            },
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(seconds: 2),
+    );
+  }
+
+  void _removeVeiculo(Veiculo onibus) async {
     final onibusIndex = _loadedItems.indexOf(onibus);
     setState(() {
       _loadedItems.remove(onibus);
     });
 
     var onibusid = onibus.idVeiculo.toString();
-
+    var storage = GetStorage();
+    final token = await storage.read("token");
     final url = Uri.http(ip, 'veiculos/$onibusid');
-    final response = http.delete(url);
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: const Duration(seconds: 3),
-      content: const Text('Veículo deletado.'),
-      action: SnackBarAction(
-          label: 'Desfazer',
-          onPressed: () {
-            setState(() {
-              _loadedItems.insert(onibusIndex, onibus);
-              final url = Uri.http(ip, 'veiculos');
-              print(url);
-              final body = json.encode(
-                {
-                  'placa': onibus.placa,
-                  'renavam': onibus.renavam,
-                  'ano': onibus.ano,
-                  'quilometragem': onibus.quilometragem,
-                  'codFrota': onibus.codFrota,
-                  'capacidade': onibus.capacidade,
-                  'taf': onibus.taf,
-                  'regEstadual': onibus.regEstadual,
-                  "id_Empresa": 1
-                },
-              );
-              print(body);
-              final response = http.post(
-                url,
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: body,
-              );
-            });
-          }),
-    ));
+    final response = await http.delete(url,
+        headers: {HttpHeaders.authorizationHeader: "Bearer ${token!}"});
+    if (response.statusCode >= 204) {
+      Get.closeAllSnackbars();
+      Get.snackbar(
+        'Veículo deletado',
+        'O veículo foi deletado com sucesso',
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      setState(() {
+        _loadedItems.insert(onibusIndex, onibus);
+      });
+      Get.closeAllSnackbars();
+      Get.snackbar(
+        'Erro ao deletar veículo',
+        'Por favor, tente novamente mais tarde',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
@@ -105,7 +140,7 @@ class _VeiculosState extends State<Veiculos> {
     if (_loadedItems.isNotEmpty) {
       mainContent = VeiculoList(
         veiculoList: _loadedItems,
-        onRemoveVeiculo: _removeVeiculo,
+        onRemoveVeiculo: _showDeleteConfirmationDialog,
         onEditVeiculo: _editVeiculo,
       );
     }

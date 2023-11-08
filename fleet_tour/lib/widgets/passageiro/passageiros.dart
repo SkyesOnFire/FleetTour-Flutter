@@ -1,14 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 import 'package:fleet_tour/widgets/dropdown_menu.dart';
 import 'package:fleet_tour/widgets/passageiro/passageiros_list.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:fleet_tour/models/pages.dart';
-import 'package:fleet_tour/widgets/passageiro/edit_passageiro.dart';
-import 'package:fleet_tour/widgets/passageiro/new_passageiro.dart';
 
 class Passageiros extends StatefulWidget {
   const Passageiros({super.key});
@@ -23,99 +23,157 @@ class _PassageirosState extends State<Passageiros> {
   @override
   void initState() {
     super.initState();
-    _loadItems();
-    print(_loadedItems);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadItems();
+    });
   }
 
   void _loadItems() async {
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
     _loadedItems = [];
-    final url = Uri.http(ip, 'passageiros');
-    print(url);
-    final response = await http.get(url);
-    print(response.body);
-    List<dynamic> listData = json.decode(response.body);
-    for (final item in listData) {
-      Map<String, dynamic> rest = item;
-      _loadedItems.add(
-        Passageiro(
-          idPassageiro: rest['idPassageiro'],
-          nome: rest['nome'],
-          rg: rest['rg'],
-          orgaoEmissor: rest['orgaoEmissor'],
-          tipoCliente: rest['tipoCliente'],
-          dataNasc: rest['dataNasc'] != null
-              ? DateTime.parse(rest['dataNasc'])
-              : null,
-        ),
-      );
+    var storage = GetStorage();
+    final token = storage.read("token");
+    final response = await http.get(Uri.http(ip, 'passageiros'),
+        headers: {'authorization': "Bearer ${token!}"});
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final body = json.decode(utf8.decode(response.body.runes.toList()));
+      for (var item in body) {
+        _loadedItems.add(Passageiro.fromJson(item));
+      }
     }
-    print("after request");
-    print(_loadedItems);
+    Get.close(1);
     setState(() {});
   }
 
-  void _addItem() async {
-    final newItem = await Navigator.of(context).push<Passageiro>(
-      MaterialPageRoute(
-        builder: (context) => const NewPassageiro(),
+  void _addPassageiroCompras() async {
+    await Get.toNamed('/passageiros/novo/compras');
+    _loadItems();
+  }
+
+  void _addPassageiroTurismo() async {
+    await Get.toNamed('/passageiros/novo/turismo');
+    _loadItems();
+  }
+
+  void _editPassageiro(Passageiro passageiro) async {
+    await Get.toNamed('/passageiros/editar', arguments: passageiro);
+    _loadItems();
+  }
+
+  void _showDeleteConfirmationDialog(Passageiro passageiro) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Confirmação de exclusão'),
+        content: const Text('Tem certeza que deseja deletar este passageiro?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              _loadItems();
+              Get.back();
+            },
+          ),
+          TextButton(
+            child: const Text(
+              'Deletar',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Get.back();
+              _removePassageiro(passageiro);
+            },
+          ),
+        ],
       ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(seconds: 2),
     );
   }
 
-  void _editExpense(Passageiro passageiro) async {
-    final newItem = await Navigator.of(context).push<Passageiro>(
-      MaterialPageRoute(
-        builder: (context) => EditPassageiro(passageiro: passageiro),
+  void _escolherTipoPassageiro() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Novo passageiro'),
+        content:
+            const Text('Escolha o tipo de passageiro que deseja cadastrar'),
+        actions: <Widget>[
+          TextButton(
+              onPressed: () => {Get.back()},
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.white),
+              )),
+          TextButton(
+            child: const Text(
+              'Compras',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Get.back();
+              _addPassageiroCompras();
+            },
+          ),
+          TextButton(
+            child: const Text(
+              'Turismo',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Get.back();
+              _addPassageiroTurismo();
+            },
+          ),
+        ],
       ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _removeExpense(Passageiro passageiro) {
-    final expenseIndex = _loadedItems.indexOf(passageiro);
+  void _removePassageiro(Passageiro passageiro) async {
+    final passageiroIndex = _loadedItems.indexOf(passageiro);
     setState(() {
       _loadedItems.remove(passageiro);
     });
 
-    Map<String, String> queryParams = {
-      'passageiroId': passageiro.idPassageiro.toString(),
-    };
-
     var passageiroId = passageiro.idPassageiro.toString();
-
+    var storage = GetStorage();
+    final token = await storage.read("token");
     final url = Uri.http(ip, 'passageiros/$passageiroId');
-    final response = http.delete(url);
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: const Duration(seconds: 3),
-      content: const Text('Passageiro deletado.'),
-      action: SnackBarAction(
-        label: 'Desfazer',
-        onPressed: () {
-          setState(() {
-            _loadedItems.insert(expenseIndex, passageiro);
-            final url = Uri.http(ip, 'passageiros');
-            print(url);
-            final body = json.encode(
-              {
-                'nome': passageiro.nome,
-                'rg': passageiro.rg,
-                'orgaoEmissor': passageiro.orgaoEmissor,
-                'tipoCliente': passageiro.tipoCliente,
-                'id_Empresa': 1,
-              },
-            );
-            print(body);
-            final response = http.post(
-              url,
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: body,
-            );
-          });
-        },
-      ),
-    ));
+    final response = await http.delete(url,
+        headers: {HttpHeaders.authorizationHeader: "Bearer ${token!}"});
+    if (response.statusCode == 204) {
+      Get.closeAllSnackbars();
+      Get.snackbar(
+        'Passageiro deletado',
+        'O passageiro foi deletado com sucesso',
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      setState(() {
+        _loadedItems.insert(passageiroIndex, passageiro);
+      });
+      Get.closeAllSnackbars();
+      Get.snackbar(
+        'Erro ao deletar passageiro',
+        'Por favor, tente novamente mais tarde',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
@@ -127,22 +185,18 @@ class _PassageirosState extends State<Passageiros> {
     if (_loadedItems.isNotEmpty) {
       mainContent = PassageirosList(
         passageiroList: _loadedItems,
-        onRemoveExpense: _removeExpense,
-        onEditExpense: _editExpense,
+        onRemovePassageiro: _showDeleteConfirmationDialog,
+        onEditPassageiro: _editPassageiro,
       );
     }
-
-    List<String> menuItems = [];
-
-    menuItems.add(Paginas.Funcionarios.toString());
-    menuItems.add(Paginas.Passageiros.toString());
 
     return Scaffold(
       appBar: AppBar(
         actions: [
           const DropdownMenuButton(),
           IconButton(onPressed: _loadItems, icon: const Icon(Icons.refresh)),
-          IconButton(onPressed: _addItem, icon: const Icon(Icons.add)),
+          IconButton(
+              onPressed: _escolherTipoPassageiro, icon: const Icon(Icons.add)),
         ],
       ),
       body: Column(
