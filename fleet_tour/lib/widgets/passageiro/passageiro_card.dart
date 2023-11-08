@@ -1,3 +1,4 @@
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 
@@ -61,6 +62,13 @@ class PassageiroCard extends StatelessWidget {
                 Text(formattedDate),
               ],
             ),
+            Row(
+              children: [
+                const Icon(Icons.email_rounded),
+                const SizedBox(width: 4),
+                Text(passageiro.email.toString()),
+              ],
+            ),
             if (passageiro.endereco != null) const SizedBox(height: 4),
             if (passageiro.endereco != null)
               Row(
@@ -74,6 +82,37 @@ class PassageiroCard extends StatelessWidget {
                 ],
               ),
               
+            if (passageiro.tipoCliente == 'Compras')
+            const Divider(),
+            if (passageiro.tipoCliente == 'Compras')
+              Row(
+                children: [
+                  const Icon(Icons.person_outline_rounded),
+                  const SizedBox(width: 4),
+                  Text(formatCNPJ(passageiro.cnpj!)),
+                ],
+              ),
+            if (passageiro.tipoCliente == 'Compras')
+              Row(
+                children: [
+                  const Icon(Icons.shop_two_rounded),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text('${passageiro.nomeFantasia}'),
+                  ),
+                ],
+              ),
+            if (passageiro.tipoCliente == 'Compras')
+              Row(
+                children: [
+                  const Icon(Icons.store_rounded),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                        '${passageiro.enderecoLoja?.rua}, ${passageiro.enderecoLoja?.numero} - ${passageiro.enderecoLoja?.cidade} / ${passageiro.enderecoLoja?.estado}'),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

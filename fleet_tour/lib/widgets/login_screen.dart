@@ -33,13 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
-
-      Map<String, String> uBody = {
-        'login': _enteredLogin,
-        'senha': _enteredPassword,
-      };
 
       final url = Uri.http(ip, 'rest/auth/login');
       final response = await http.post(url,

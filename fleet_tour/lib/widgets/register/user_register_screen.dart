@@ -29,7 +29,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
 
       usuario.empresa = empresa;

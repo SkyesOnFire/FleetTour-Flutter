@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class DropdownState extends GetxController {
-  Rx<String?> _selectedItem = Rx<String?>(null);
+  final Rx<String?> _selectedItem = Rx<String?>(null);
 
   DropdownState({String? defaultValue}) {
     _selectedItem.value = defaultValue;

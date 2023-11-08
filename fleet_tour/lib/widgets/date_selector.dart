@@ -15,7 +15,7 @@ class _DateSelectorWidgetState extends State<DateSelectorWidget> {
         _selectDate(context);
       },
       child: Container(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5.0),
           border: Border.all(color: Colors.grey),
@@ -23,11 +23,9 @@ class _DateSelectorWidgetState extends State<DateSelectorWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(Icons.calendar_today),
+            const Icon(Icons.calendar_today),
             Text(
-              selectedDate != null
-                  ? selectedDate.toString()
-                  : 'Selecione uma data',
+              selectedDate.toString(),
             ),
           ],
         ),

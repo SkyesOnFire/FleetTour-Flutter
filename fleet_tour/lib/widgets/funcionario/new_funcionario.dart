@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:fleet_tour/configs/server.dart';
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:fleet_tour/models/funcionario.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +31,7 @@ class _NewFuncionarioState extends State<NewFuncionario> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
 
       var storage = GetStorage();
@@ -86,52 +86,61 @@ class _NewFuncionarioState extends State<NewFuncionario> {
             key: _formKey,
             child: Column(
               children: [
-                DropdownButtonFormField(
-                  items: ['Motorista', 'Guia'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    _funcionario.funcao = value;
-                  },
-                  decoration:
-                      const InputDecoration(labelText: 'Função do funcionário'),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Selecione uma funcão para o funcionário';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: DropdownButtonFormField(
+                    items: ['Motorista', 'Guia'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      _funcionario.funcao = value;
+                    },
+                    decoration: const InputDecoration(
+                        labelText: 'Função do funcionário'),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Selecione uma funcão para o funcionário';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(label: Text("Nome")),
-                  onSaved: (value) => _funcionario.nome = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Digite o nome do funcionário';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(label: Text("Nome")),
+                    onSaved: (value) => _funcionario.nome = value,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Digite o nome do funcionário';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(label: Text("CPF")),
-                  maxLength: 15,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    CpfInputFormatter(),
-                  ],
-                  onSaved: (value) => _funcionario.cpf = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Digite o CPF do funcionário';
-                    }
-                    if (!CPFValidator.isValid(value)) {
-                      return 'CPF inválido';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(label: Text("CPF")),
+                    maxLength: 14,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CpfInputFormatter(),
+                    ],
+                    onSaved: (value) => _funcionario.cpf = value,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Digite o CPF do funcionário';
+                      }
+                      if (!CPFValidator.isValid(value)) {
+                        return 'CPF inválido';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
                 TextFormField(
                   decoration: const InputDecoration(label: Text("Telefone")),
@@ -142,101 +151,117 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                   ],
                   onSaved: (value) => _funcionario.telefone = value,
                 ),
-                DropdownButtonFormField(
-                  items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    _funcionario.genero = value;
-                  },
-                  decoration: const InputDecoration(labelText: 'Gênero'),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Escolha um gênero';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: DropdownButtonFormField(
+                    items:
+                        ['Masculino', 'Feminino', 'Outro'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      _funcionario.genero = value;
+                    },
+                    decoration: const InputDecoration(labelText: 'Gênero'),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Escolha um gênero';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(label: Text("RG")),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    BrazilianRgInputFormatter(),
-                  ],
-                  onSaved: (value) => _funcionario.rg = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Digite o RG do funcionário';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(label: Text("RG")),
+                    onSaved: (value) => _funcionario.rg = value,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Digite o RG do funcionário';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(label: Text("CNH")),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  onSaved: (value) => _funcionario.cnh = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Digite a CNH do funcionário';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(label: Text("CNH")),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    onSaved: (value) => _funcionario.cnh = value,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Digite a CNH do funcionário';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration:
-                      const InputDecoration(label: Text("Data de Nascimento")),
-                  onSaved: (value) {
-                    if (GetUtils.isLengthEqualTo(value, 10)) {
-                      value = value!.replaceAll('/', '-');
-                      var splitValue = value.split('-');
-                      value =
-                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
-                      _funcionario.dataNasc = DateTime.parse(value);
-                    }
-                  },
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    DataInputFormatter(),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        label: Text("Data de Nascimento")),
+                    onSaved: (value) {
+                      if (GetUtils.isLengthEqualTo(value, 10)) {
+                        value = value!.replaceAll('/', '-');
+                        var splitValue = value.split('-');
+                        value =
+                            '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                        _funcionario.dataNasc = DateTime.parse(value);
+                      }
+                    },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      DataInputFormatter(),
+                    ],
+                  ),
                 ),
-                TextFormField(
-                  decoration:
-                      const InputDecoration(label: Text("Vencimento da CNH")),
-                  onSaved: (value) {
-                    if (GetUtils.isLengthEqualTo(value, 10)) {
-                      value = value!.replaceAll('/', '-');
-                      var splitValue = value.split('-');
-                      value =
-                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
-                      _funcionario.vencimentoCnh = DateTime.parse(value);
-                    }
-                  },
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    DataInputFormatter(),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: TextFormField(
+                    decoration:
+                        const InputDecoration(label: Text("Vencimento da CNH")),
+                    onSaved: (value) {
+                      if (GetUtils.isLengthEqualTo(value, 10)) {
+                        value = value!.replaceAll('/', '-');
+                        var splitValue = value.split('-');
+                        value =
+                            '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                        _funcionario.vencimentoCnh = DateTime.parse(value);
+                      }
+                    },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      DataInputFormatter(),
+                    ],
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                      label: Text("Vencimento Cartão Saúde")),
-                  onSaved: (value) {
-                    if (GetUtils.isLengthEqualTo(value, 10)) {
-                      value = value!.replaceAll('/', '-');
-                      var splitValue = value.split('-');
-                      value =
-                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
-                      _funcionario.vencimentoCartSaude = DateTime.parse(value);
-                    }
-                  },
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    DataInputFormatter(),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        label: Text("Vencimento Cartão Saúde")),
+                    onSaved: (value) {
+                      if (GetUtils.isLengthEqualTo(value, 10)) {
+                        value = value!.replaceAll('/', '-');
+                        var splitValue = value.split('-');
+                        value =
+                            '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                        _funcionario.vencimentoCartSaude =
+                            DateTime.parse(value);
+                      }
+                    },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      DataInputFormatter(),
+                    ],
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(12.0),

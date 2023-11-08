@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,7 +35,7 @@ class _NewPassageiroTurismoState extends State<NewPassageiroTurismo> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
 
       final token = storage.read("token");

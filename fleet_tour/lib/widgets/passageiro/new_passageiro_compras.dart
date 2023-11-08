@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +10,7 @@ import 'package:get_storage/get_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:fleet_tour/configs/server.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class NewPassageiroCompras extends StatefulWidget {
   const NewPassageiroCompras({super.key});
@@ -41,7 +42,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
 
       final token = storage.read("token");
@@ -117,6 +118,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                         child: TextFormField(
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
+                            rgMaskFormatter,
                           ],
                           decoration: const InputDecoration(
                             label: Text("RG"),
@@ -291,7 +293,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                             return null;
                           },
                           onChanged: (value) {
-                            _passageiro.cnpj = value!;
+                            _passageiro.cnpj = value;
                             if (GetUtils.isLengthEqualTo(
                                 _passageiro.cnpj, 18)) {
                               _passageiro.cnpj =

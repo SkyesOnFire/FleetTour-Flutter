@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 bool validarRenavam(String renavam) {
   // Remove caracteres não numéricos
@@ -135,35 +136,20 @@ String? formatDateForInput(DateTime? date) {
   return '$day/$month/$year';
 }
 
-class BrazilianRgInputFormatter extends TextInputFormatter {
+class RgInputFormatter extends TextInputFormatter {
+  final MaskTextInputFormatter rg7Digits = MaskTextInputFormatter(mask: '##.###.###-#', filter: {"#": RegExp(r'[0-9Xx]')});
+  final MaskTextInputFormatter rg8Digits = MaskTextInputFormatter(mask: '###.###.###-#', filter: {"#": RegExp(r'[0-9Xx]')});
+  final MaskTextInputFormatter rg9Digits = MaskTextInputFormatter(mask: '##.###.###-##', filter: {"#": RegExp(r'[0-9Xx]')});
+
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    String newText = newValue.text;
-
-    if (newText.length > 9) {
-      // If there's a letter at the end, allow it to be uppercase or lowercase 'X'
-      if (newText.length == 10 && (newText.endsWith('X') || newText.endsWith('x'))) {
-        newText = newText.toUpperCase();
-      } else {
-        // If it's not a letter 'X', ensure it's a digit
-        if (newText.length == 10 && !RegExp(r'[0-9X]').hasMatch(newText.substring(9))) {
-          newText = newText.substring(0, 9);
-        } else {
-          // If the length is greater than 10, trim the extra characters
-          newText = newText.substring(0, 10);
-        }
-      }
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.length <= 9) {
+      return rg7Digits.formatEditUpdate(oldValue, newValue);
+    } else if (newValue.text.length <= 10) {
+      return rg8Digits.formatEditUpdate(oldValue, newValue);
+    } else {
+      return rg9Digits.formatEditUpdate(oldValue, newValue);
     }
-
-    // Remove any characters that are not digits or the letter 'X'
-    newText = newText.replaceAll(RegExp(r'[^0-9X]'), '');
-
-    // Return the new value with the selection at the end of the input
-    return TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newText.length),
-    );
   }
 }
 

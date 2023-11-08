@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:fleet_tour/widgets/empresa/empresas.dart';
-import 'package:fleet_tour/widgets/funcionario/funcionarios.dart';
-import 'package:fleet_tour/widgets/veiculo/veiculo.dart';
-import 'package:fleet_tour/widgets/passageiro/passageiros.dart';
 import 'package:fleet_tour/providers/dropdown_state.dart';
 
 class DropdownMenuButton extends StatefulWidget {

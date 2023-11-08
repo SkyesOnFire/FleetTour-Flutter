@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:brasil_fields/brasil_fields.dart';
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -33,11 +33,11 @@ class _EditFuncionarioState extends State<EditFuncionario> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
       var storage = GetStorage();
       final token = storage.read("token");
-      final url = Uri.http(ip, 'veiculos/${_funcionario.idFuncionario}');
+      final url = Uri.http(ip, 'funcionarios/${_funcionario.idFuncionario}');
       final body = json.encode(_funcionario.toJson());
       final response = await http.put(
         url,
@@ -100,7 +100,6 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                       child: Text(value),
                     );
                   }).toList(),
-                  onChanged: null,
                   decoration:
                       const InputDecoration(labelText: 'Função do funcionário'),
                   validator: (value) {
@@ -108,6 +107,9 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                       return 'Selecione uma funcão para o funcionário';
                     }
                     return null;
+                  },
+                  onChanged: (value) {
+                    _funcionario.funcao = value;
                   },
                 ),
                 TextFormField(
@@ -158,7 +160,6 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                       child: Text(value),
                     );
                   }).toList(),
-                  onChanged: null,
                   decoration: const InputDecoration(labelText: 'Gênero'),
                   validator: (value) {
                     if (value == null) {
@@ -166,13 +167,16 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                     }
                     return null;
                   },
+                  onChanged: (value) {
+                    _funcionario.genero = value;
+                  },
                 ),
                 TextFormField(
                   initialValue: _funcionario.rg,
                   decoration: const InputDecoration(label: Text("RG")),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    BrazilianRgInputFormatter(),
+                    RgInputFormatter(),
                   ],
                   onSaved: (value) => _funcionario.rg = value,
                   validator: (value) {

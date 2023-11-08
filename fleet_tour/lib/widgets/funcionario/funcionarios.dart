@@ -57,8 +57,8 @@ class _FuncionariosState extends State<Funcionarios> {
     _loadItems();
   }
 
-  void _editFuncionario(Funcionario funcionario) {
-    Get.toNamed('/funcionarios/editar', arguments: funcionario);
+  void _editFuncionario(Funcionario funcionario) async {
+    await Get.toNamed('/funcionarios/editar', arguments: funcionario);
     _loadItems();
   }
 
@@ -91,7 +91,7 @@ class _FuncionariosState extends State<Funcionarios> {
         ],
       ),
       barrierDismissible: false,
-      transitionDuration: const Duration(seconds: 2),
+      transitionDuration: const Duration(milliseconds: 500),
     );
   }
 

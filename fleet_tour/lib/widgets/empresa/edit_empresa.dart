@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -46,7 +46,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
 
       var storage = GetStorage();
@@ -94,7 +94,6 @@ class _EditEmpresaState extends State<EditEmpresa> {
       final cnpj = _empresa.cnpj!.trim();
       final cnpjCheckUrl = Uri.http(ip, 'empresas/cnpj/$cnpj');
       final cnpjCheckResponse = await http.get(cnpjCheckUrl);
-      print(cnpjCheckResponse.statusCode);
       if (cnpjCheckResponse.body != 'false') {
         Get.closeAllSnackbars();
         Get.snackbar(
@@ -177,7 +176,7 @@ class _EditEmpresaState extends State<EditEmpresa> {
                     return null;
                   },
                   onChanged: (value) {
-                    _empresa.cnpj = value!;
+                    _empresa.cnpj = value;
                     if (GetUtils.isLengthEqualTo(_empresa.cnpj, 18)) {
                       _empresa.cnpj = _empresa.cnpj!.replaceAll('-', '');
                       _empresa.cnpj = _empresa.cnpj!.replaceAll('.', '');

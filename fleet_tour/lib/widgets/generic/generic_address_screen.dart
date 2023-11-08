@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:fleet_tour/models/endereco.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

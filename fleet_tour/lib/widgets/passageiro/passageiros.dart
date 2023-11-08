@@ -95,7 +95,7 @@ class _PassageirosState extends State<Passageiros> {
         ],
       ),
       barrierDismissible: false,
-      transitionDuration: const Duration(seconds: 2),
+      transitionDuration: const Duration(milliseconds: 500),
     );
   }
 

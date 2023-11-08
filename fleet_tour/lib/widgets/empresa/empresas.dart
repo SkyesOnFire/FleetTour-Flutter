@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fleet_tour/data/validationUtils.dart';
+import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:fleet_tour/widgets/dropdown_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
@@ -42,7 +42,7 @@ class _EmpresasState extends State<Empresas> {
           child: CircularProgressIndicator(),
         ),
         barrierDismissible: false,
-        transitionDuration: const Duration(seconds: 2),
+        transitionDuration: const Duration(milliseconds: 500),
       );
 
       _empresa.endereco = endereco;

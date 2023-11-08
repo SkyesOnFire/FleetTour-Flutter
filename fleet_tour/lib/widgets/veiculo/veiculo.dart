@@ -51,13 +51,13 @@ class _VeiculosState extends State<Veiculos> {
     setState(() {});
   }
 
-  void _addItem() {
-    Get.toNamed('/veiculos/novo');
+  void _addItem() async {
+    await Get.toNamed('/veiculos/novo');
     _loadItems();
   }
 
-  void _editVeiculo(Veiculo onibus) {
-    Get.toNamed('/veiculos/editar', arguments: onibus);
+  void _editVeiculo(Veiculo onibus) async {
+    await Get.toNamed('/veiculos/editar', arguments: onibus);
     _loadItems();
   }
 
@@ -90,7 +90,7 @@ class _VeiculosState extends State<Veiculos> {
         ],
       ),
       barrierDismissible: false,
-      transitionDuration: const Duration(seconds: 2),
+      transitionDuration: const Duration(milliseconds: 500),
     );
   }
 

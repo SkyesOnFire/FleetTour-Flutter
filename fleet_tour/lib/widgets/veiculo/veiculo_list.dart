@@ -9,29 +9,29 @@ class VeiculoList extends StatelessWidget {
       required this.onRemoveVeiculo,
       required this.onEditVeiculo});
 
-  final void Function(Veiculo veiculo) onRemoveVeiculo;
   final void Function(Veiculo veiculo) onEditVeiculo;
+  final void Function(Veiculo veiculo) onRemoveVeiculo;
   final List<Veiculo> veiculoList;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: veiculoList.length,
-        itemBuilder: (ctx, index) => GestureDetector(
-              onTap: () {
-                onEditVeiculo(veiculoList[index]);
-              },
-              child: Dismissible(
-                  key: ValueKey(veiculoList[index]),
-                  background: Container(
-                    color:
-                        Theme.of(context).colorScheme.error.withOpacity(0.75),
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                  onDismissed: (direction) {
-                    onRemoveVeiculo(veiculoList[index]);
-                  },
-                  child: VeiculoCard(veiculoList[index])),
-            ));
+      itemCount: veiculoList.length,
+      itemBuilder: (ctx, index) => GestureDetector(
+        onTap: () {
+          onEditVeiculo(veiculoList[index]);
+        },
+        child: Dismissible(
+            key: ValueKey(veiculoList[index].idVeiculo),
+            background: Container(
+              color: Theme.of(context).colorScheme.error.withOpacity(0.75),
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+            onDismissed: (direction) {
+              onRemoveVeiculo(veiculoList[index]);
+            },
+            child: VeiculoCard(veiculoList[index])),
+      ),
+    );
   }
 }
