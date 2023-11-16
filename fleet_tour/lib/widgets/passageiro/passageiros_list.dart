@@ -1,3 +1,4 @@
+import 'package:fleet_tour/widgets/passageiro/passageiro_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 
@@ -32,7 +33,7 @@ class PassageirosList extends StatelessWidget {
           onDismissed: (direction) {
             onRemovePassageiro(passageiroList[index]);
           },
-          child: PassageiroCard(passageiro: passageiroList[index]),
+          child: PassageiroTile(passageiro: passageiroList[index]),
         ),
       ),
     );

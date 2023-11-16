@@ -82,147 +82,169 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
             key: _formKey,
             child: Column(
               children: [
-                DropdownButtonFormField(
-                  items: [
-                    empresa.email.toString(),
-                    empresa.emailResponsavel.toString()
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    _usuario.login = value;
-                  },
-                  decoration:
-                      const InputDecoration(labelText: 'Email para Login'),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Escolha um email para utilizar como login';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonFormField(
+                    items: [
+                      empresa.email.toString(),
+                      if (empresa.emailResponsavel != empresa.email.toString())
+                        empresa.emailResponsavel.toString()
+                    ].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      _usuario.login = value;
+                    },
+                    decoration:
+                        const InputDecoration(labelText: 'Email para Login'),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Escolha um email para utilizar como login';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Senha'),
-                  textInputAction: TextInputAction.next,
-                  obscureText: true,
-                  validator: (value) {
-                    if (value!.isEmpty && GetUtils.isLengthLessThan(value, 8)) {
-                      return 'Escolha uma senha, deve ser maior que 8 dígitos';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _usuario.senha = value;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'Senha'),
+                    textInputAction: TextInputAction.next,
+                    obscureText: true,
+                    validator: (value) {
+                      if (value!.isEmpty && GetUtils.isLengthLessThan(value, 8)) {
+                        return 'Escolha uma senha, deve ser maior que 8 dígitos';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _usuario.senha = value;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Nome Completo'),
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value!.isEmpty && !value.contains(" ")) {
-                      return 'Entre com seu nome completo';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _usuario.nome = value;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'Nome Completo'),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value!.isEmpty && !value.contains(" ")) {
+                        return 'Entre com seu nome completo';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _usuario.nome = value;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'CPF'),
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    CpfInputFormatter(),
-                  ],
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (!GetUtils.isLengthEqualTo(value, 14)) {
-                      return 'Entre com um CPF válido';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    if (GetUtils.isLengthEqualTo(value, 14)) {
-                      _usuario.cpf = value;
-                      _usuario.cpf = _usuario.cpf!.replaceAll('.', '');
-                      _usuario.cpf = _usuario.cpf!.replaceAll('-', '');
-                    }
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'CPF'),
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CpfInputFormatter(),
+                    ],
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (!GetUtils.isLengthEqualTo(value, 14)) {
+                        return 'Entre com um CPF válido';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      if (GetUtils.isLengthEqualTo(value, 14)) {
+                        _usuario.cpf = value;
+                        _usuario.cpf = _usuario.cpf!.replaceAll('.', '');
+                        _usuario.cpf = _usuario.cpf!.replaceAll('-', '');
+                      }
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Telefone'),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    TelefoneInputFormatter(),
-                  ],
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Entre com seu número de telefone';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _usuario.telefone = value;
-                    if (GetUtils.isLengthGreaterOrEqual(
-                        _usuario.telefone, 14)) {
-                      _usuario.telefone =
-                          _usuario.telefone!.replaceAll('(', '');
-                      _usuario.telefone =
-                          _usuario.telefone!.replaceAll(')', '');
-                      _usuario.telefone =
-                          _usuario.telefone!.replaceAll('-', '');
-                      GetUtils.removeAllWhitespace(_usuario.telefone!);
-                    }
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'Telefone'),
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      TelefoneInputFormatter(),
+                    ],
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Entre com seu número de telefone';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _usuario.telefone = value;
+                      if (GetUtils.isLengthGreaterOrEqual(
+                          _usuario.telefone, 14)) {
+                        _usuario.telefone =
+                            _usuario.telefone!.replaceAll('(', '');
+                        _usuario.telefone =
+                            _usuario.telefone!.replaceAll(')', '');
+                        _usuario.telefone =
+                            _usuario.telefone!.replaceAll('-', '');
+                        GetUtils.removeAllWhitespace(_usuario.telefone!);
+                      }
+                    },
+                  ),
                 ),
-                DropdownButtonFormField(
-                  items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    _usuario.genero = value;
-                  },
-                  decoration: const InputDecoration(labelText: 'Gênero'),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Escolha um gênero';
-                    }
-                    return null;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonFormField(
+                    items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      _usuario.genero = value;
+                    },
+                    decoration: const InputDecoration(labelText: 'Gênero'),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Escolha um gênero';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  maxLength: 10,
-                  decoration:
-                      const InputDecoration(labelText: 'Data de Nascimento'),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    DataInputFormatter(),
-                  ],
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (!GetUtils.isLengthEqualTo(value, 10)) {
-                      return 'Informe a data de nascimento';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    if (GetUtils.isLengthEqualTo(value, 10)) {
-                      value = value.replaceAll('/', '-');
-                      var splitValue = value.split('-');
-                      value =
-                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
-                      _usuario.dataNascimento = DateTime.parse(value);
-                    }
-                  },
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: TextFormField(
+                    maxLength: 10,
+                    decoration:
+                        const InputDecoration(labelText: 'Data de Nascimento'),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      DataInputFormatter(),
+                    ],
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (!GetUtils.isLengthEqualTo(value, 10)) {
+                        return 'Informe a data de nascimento';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      if (GetUtils.isLengthEqualTo(value, 10)) {
+                        value = value.replaceAll('/', '-');
+                        var splitValue = value.split('-');
+                        value =
+                            '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                        _usuario.dataNascimento = DateTime.parse(value);
+                      }
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 20,

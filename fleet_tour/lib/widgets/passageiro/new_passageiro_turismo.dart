@@ -10,6 +10,7 @@ import 'package:get_storage/get_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:fleet_tour/configs/server.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class NewPassageiroTurismo extends StatefulWidget {
   const NewPassageiroTurismo({super.key});
@@ -25,6 +26,10 @@ class _NewPassageiroTurismoState extends State<NewPassageiroTurismo> {
   final Passageiro _passageiro = Passageiro();
   final storage = GetStorage();
   final TextEditingController _enderecoController = TextEditingController();
+  final MaskTextInputFormatter rgMaskFormatter = MaskTextInputFormatter(
+    mask: '##.###.###-#', // This is the mask for the RG format.
+    filter: {"#": RegExp(r'[0-9Xx]')}, // RG can end with a number or 'X'/'x'.
+  );
 
   void _savePassageiro() async {
     if (_formKey.currentState!.validate()) {
@@ -109,8 +114,10 @@ class _NewPassageiroTurismoState extends State<NewPassageiroTurismo> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          maxLength: 12,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
+                            rgMaskFormatter
                           ],
                           decoration: const InputDecoration(
                             label: Text("RG"),
@@ -132,6 +139,7 @@ class _NewPassageiroTurismoState extends State<NewPassageiroTurismo> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          maxLength: 6,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
                             label: Text("Orgão emissor"),
@@ -193,8 +201,8 @@ class _NewPassageiroTurismoState extends State<NewPassageiroTurismo> {
                           ],
                           keyboardType: TextInputType.number,
                           validator: (value) {
-                            if (value!.trim().length < 10) {
-                              return 'Entre com uma data de nascimento válida';
+                            if (!GetUtils.isLengthEqualTo(value, 10)) {
+                              return 'Informe a data de nascimento';
                             }
                             return null;
                           },
@@ -279,7 +287,7 @@ class _NewPassageiroTurismoState extends State<NewPassageiroTurismo> {
                             _passageiro.endereco =
                                 storage.read('temp_endereco');
                             storage.remove('temp_endereco');
-                            if (_passageiro.enderecoLoja != null) {
+                            if (_passageiro.endereco != null) {
                               _enderecoController.text =
                                   "${_passageiro.endereco!.rua}, ${_passageiro.endereco!.numero} - ${_passageiro.endereco!.cidade} / ${_passageiro.endereco!.estado}";
                             }

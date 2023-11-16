@@ -98,209 +98,235 @@ class _RegisterScreenState extends State<RegisterScreen> {
             key: _formKey,
             child: Column(
               children: [
-                TextFormField(
-                  maxLength: 18,
-                  decoration: const InputDecoration(labelText: 'CNPJ'),
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    CnpjInputFormatter(),
-                  ],
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (!GetUtils.isLengthEqualTo(value, 18)) {
-                      return 'Informe o CNPJ';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.cnpj = value;
-                    if (GetUtils.isLengthEqualTo(_empresa.cnpj, 18)) {
-                      _empresa.cnpj = _empresa.cnpj!.replaceAll('-', '');
-                      _empresa.cnpj = _empresa.cnpj!.replaceAll('.', '');
-                      _empresa.cnpj = _empresa.cnpj!.replaceAll('/', '');
-                      if (!GetUtils.isNumericOnly(_empresa.cnpj!)) {
-                        Get.closeAllSnackbars();
-                        Get.snackbar(
-                          'CNPJ não encontrado',
-                          'Por favor, informe um CNPJ válido',
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      } else {
-                        _consultarCnpj();
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: TextFormField(
+                    maxLength: 18,
+                    decoration: const InputDecoration(labelText: 'CNPJ'),
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CnpjInputFormatter(),
+                    ],
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (!GetUtils.isLengthEqualTo(value, 18)) {
+                        return 'Informe o CNPJ';
                       }
-                    }
-                  },
-                ),
-                TextFormField(
-                  controller: _nomeFantasiaController,
-                  decoration: const InputDecoration(labelText: 'Nome Fantasia'),
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe o Nome Fantasia';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.nomeFantasia = value;
-                  },
-                ),
-                TextFormField(
-                  controller: _razaoSocialController,
-                  decoration: const InputDecoration(labelText: 'Razão Social'),
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe a Razão Social';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.razaoSocial = value;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Inscrição Municipal',
-                    hintText: 'Somente números',
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.cnpj = value;
+                      if (GetUtils.isLengthEqualTo(_empresa.cnpj, 18)) {
+                        _empresa.cnpj = _empresa.cnpj!.replaceAll('-', '');
+                        _empresa.cnpj = _empresa.cnpj!.replaceAll('.', '');
+                        _empresa.cnpj = _empresa.cnpj!.replaceAll('/', '');
+                        if (!GetUtils.isNumericOnly(_empresa.cnpj!)) {
+                          Get.closeAllSnackbars();
+                          Get.snackbar(
+                            'CNPJ não encontrado',
+                            'Por favor, informe um CNPJ válido',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        } else {
+                          _consultarCnpj();
+                        }
+                      }
+                    },
                   ),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe a Inscrição Municipal';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.inscricaoMunicipal = value;
-                  },
                 ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Inscrição Estadual',
-                    hintText: 'Somente números',
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _nomeFantasiaController,
+                    decoration: const InputDecoration(labelText: 'Nome Fantasia'),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe o Nome Fantasia';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.nomeFantasia = value;
+                    },
                   ),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe a Inscrição Estadual';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.inscricaoEstadual = value;
-                  },
                 ),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'E-mail'),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe o E-mail';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.email = value;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _razaoSocialController,
+                    decoration: const InputDecoration(labelText: 'Razão Social'),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe a Razão Social';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.razaoSocial = value;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  controller: _foneEmpresaController,
-                  maxLength: 15,
-                  decoration: const InputDecoration(labelText: 'Telefone'),
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    TelefoneInputFormatter(),
-                  ],
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (!GetUtils.isLengthGreaterOrEqual(value, 14)) {
-                      return 'Informe o Telefone';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.foneEmpresa = value;
-                    if (GetUtils.isLengthGreaterOrEqual(
-                        _empresa.foneEmpresa, 14)) {
-                      _empresa.foneEmpresa =
-                          _empresa.foneEmpresa!.replaceAll('-', '');
-                      _empresa.foneEmpresa =
-                          _empresa.foneEmpresa!.replaceAll('(', '');
-                      _empresa.foneEmpresa =
-                          _empresa.foneEmpresa!.replaceAll(')', '');
-                      _empresa.foneEmpresa =
-                          GetUtils.removeAllWhitespace(_empresa.foneEmpresa!);
-                    }
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Inscrição Municipal',
+                    ),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe a Inscrição Municipal (ISENTO se não houver)';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.inscricaoMunicipal = value;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration:
-                      const InputDecoration(labelText: 'Nome Responsável'),
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe o Nome do Responsável';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.nomeResponsavel = value;
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Inscrição Estadual',
+                    ),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe a Inscrição Estadual (ISENTO se não houver)';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.inscricaoEstadual = value;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  maxLength: 15,
-                  decoration:
-                      const InputDecoration(labelText: 'Telefone Responsável'),
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    TelefoneInputFormatter(),
-                  ],
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (!GetUtils.isLengthGreaterOrEqual(value, 14)) {
-                      return 'Informe o Telefone do Responsável';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.foneResponsavel = value;
-                    if (GetUtils.isLengthGreaterOrEqual(
-                        _empresa.foneResponsavel, 14)) {
-                      _empresa.foneResponsavel =
-                          _empresa.foneResponsavel!.replaceAll('-', '');
-                      _empresa.foneResponsavel =
-                          _empresa.foneResponsavel!.replaceAll('(', '');
-                      _empresa.foneResponsavel =
-                          _empresa.foneResponsavel!.replaceAll(')', '');
-                      _empresa.foneResponsavel = GetUtils.removeAllWhitespace(
-                          _empresa.foneResponsavel!);
-                    }
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'E-mail'),
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe o E-mail';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.email = value;
+                    },
+                  ),
                 ),
-                TextFormField(
-                  decoration:
-                      const InputDecoration(labelText: 'E-mail Responsável'),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Informe o E-mail do Responsável';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _empresa.emailResponsavel = value;
-                  },
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: TextFormField(
+                    controller: _foneEmpresaController,
+                    maxLength: 15,
+                    decoration: const InputDecoration(labelText: 'Telefone'),
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      TelefoneInputFormatter(),
+                    ],
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (!GetUtils.isLengthGreaterOrEqual(value, 14)) {
+                        return 'Informe o Telefone';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.foneEmpresa = value;
+                      if (GetUtils.isLengthGreaterOrEqual(
+                          _empresa.foneEmpresa, 14)) {
+                        _empresa.foneEmpresa =
+                            _empresa.foneEmpresa!.replaceAll('-', '');
+                        _empresa.foneEmpresa =
+                            _empresa.foneEmpresa!.replaceAll('(', '');
+                        _empresa.foneEmpresa =
+                            _empresa.foneEmpresa!.replaceAll(')', '');
+                        _empresa.foneEmpresa =
+                            GetUtils.removeAllWhitespace(_empresa.foneEmpresa!);
+                      }
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration:
+                        const InputDecoration(labelText: 'Nome Responsável'),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe o Nome do Responsável';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.nomeResponsavel = value;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: TextFormField(
+                    maxLength: 15,
+                    decoration:
+                        const InputDecoration(labelText: 'Telefone Responsável'),
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      TelefoneInputFormatter(),
+                    ],
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (!GetUtils.isLengthGreaterOrEqual(value, 14)) {
+                        return 'Informe o Telefone do Responsável';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.foneResponsavel = value;
+                      if (GetUtils.isLengthGreaterOrEqual(
+                          _empresa.foneResponsavel, 14)) {
+                        _empresa.foneResponsavel =
+                            _empresa.foneResponsavel!.replaceAll('-', '');
+                        _empresa.foneResponsavel =
+                            _empresa.foneResponsavel!.replaceAll('(', '');
+                        _empresa.foneResponsavel =
+                            _empresa.foneResponsavel!.replaceAll(')', '');
+                        _empresa.foneResponsavel = GetUtils.removeAllWhitespace(
+                            _empresa.foneResponsavel!);
+                      }
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration:
+                        const InputDecoration(labelText: 'E-mail Responsável'),
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Informe o E-mail do Responsável';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _empresa.emailResponsavel = value;
+                    },
+                  ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,

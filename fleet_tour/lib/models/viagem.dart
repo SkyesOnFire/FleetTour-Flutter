@@ -47,8 +47,6 @@ class Viagem {
     return Viagem(
       idViagem: json['idViagem'],
       dataViagem: DateTime.parse(json['dataViagem']),
-      horaSaida: DateTime.parse(json['horaSaida']),
-      horaChegada: DateTime.parse(json['horaChegada']),
       valor: json['valor'],
       status: json['status'],
       observacao: json['observacao'],
@@ -60,7 +58,6 @@ class Viagem {
       passageiros: json['passageiros'] != null ? (json['passageiros'] as List).map((i) => Passageiro.fromJson(i)).toList() : null,
       funcionarios: json['funcionarios'] != null ? (json['funcionarios'] as List).map((i) => Funcionario.fromJson(i)).toList() : null,
       veiculo: json['veiculo'] != null ? Veiculo.fromJson(json['veiculo']) : null,
-      empresa: json['empresa'] != null ? Empresa.fromJson(json['empresa']) : null,
       contratante: json['contratante'] != null ? Contratante.fromJson(json['contratante']) : null,
     );
   }
@@ -79,8 +76,8 @@ class Viagem {
       'km': km,
       'nfe': nfe,
       'valorNfe': valorNfe,
-      'passageiros': passageiros?.map((e) => e.toJson()).toList(),
-      'funcionarios': funcionarios?.map((e) => e.toJson()).toList(),
+      'passageiros': passageiros?.map((e) => e.idPassageiro).toList(),
+      'funcionarios': funcionarios?.map((e) => e.idFuncionario).toList(),
       'veiculo': veiculo?.toJson(),
       'empresa': empresa?.toJson(),
       'contratante': contratante?.toJson(),

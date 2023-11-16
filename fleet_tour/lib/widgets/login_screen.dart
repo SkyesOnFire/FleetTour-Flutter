@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         Get.close(1);
 
-        Get.to(() => const Veiculos());
+        Get.toNamed("/home");
       } else {
         Get.close(1);
         Get.closeAllSnackbars();
@@ -68,10 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     }
-  }
-
-  void _doLogin() {
-    Get.toNamed("/veiculos");
   }
 
   void _doRegister() {

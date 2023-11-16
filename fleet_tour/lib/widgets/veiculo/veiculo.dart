@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fleet_tour/configs/custom_app_bar.dart';
+import 'package:fleet_tour/models/manutencao.dart';
+import 'package:fleet_tour/widgets/generic/generic_app_bar.dart';
+import 'package:fleet_tour/widgets/veiculo/manutencao_form.dart';
+import 'package:fleet_tour/widgets/veiculo/manutencao_list_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
 import 'package:fleet_tour/models/veiculo.dart';
@@ -19,6 +24,7 @@ class Veiculos extends StatefulWidget {
 
 class _VeiculosState extends State<Veiculos> {
   List<Veiculo> _loadedItems = [];
+  List<Manutencao> _loadedManutencoes = [];
 
   @override
   void initState() {
@@ -61,6 +67,29 @@ class _VeiculosState extends State<Veiculos> {
     _loadItems();
   }
 
+  void getManutencoes(Veiculo veiculo) async {
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
+    _loadedItems = [];
+    var storage = GetStorage();
+    final token = storage.read("token");
+    final response = await http.get(
+        Uri.http(ip, 'manutencoes/${veiculo.idVeiculo}}'),
+        headers: {'authorization': "Bearer ${token!}"});
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final body = json.decode(response.body);
+      for (var item in body) {
+        _loadedManutencoes.add(Manutencao.fromJson(item));
+      }
+    }
+    Get.close(1);
+  }
+
   void _showDeleteConfirmationDialog(Veiculo veiculo) {
     Get.dialog(
       AlertDialog(
@@ -73,8 +102,8 @@ class _VeiculosState extends State<Veiculos> {
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
-              _loadItems();
-              Get.back();
+              Get.offAll(() => const Veiculos(),
+                  transition: Transition.noTransition);
             },
           ),
           TextButton(
@@ -92,6 +121,65 @@ class _VeiculosState extends State<Veiculos> {
       barrierDismissible: false,
       transitionDuration: const Duration(milliseconds: 500),
     );
+  }
+
+  void showAbastecimentosModal() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return ManutencaoListPicker(
+          manutencoes: _loadedManutencoes
+              .where((element) => element.observacao == 'Abastecimento')
+              .toList(),
+        );
+      },
+    );
+  }
+
+  void showManutencoesModal() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return ManutencaoListPicker(
+          manutencoes: _loadedManutencoes
+              .where((element) => element.observacao != 'Abastecimento')
+              .toList(),
+        );
+      },
+    );
+  }
+
+  void saveVeiculoForManutencao(Veiculo veiculo) {
+    GetStorage storage = GetStorage();
+    storage.write('veiculoId', veiculo.idVeiculo);
+  }
+
+  void newManutencoesModal() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return const ManutencaoForm();
+      },
+    );
+  }
+
+  void newAbastecimentoModal() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return const ManutencaoForm();
+      },
+    );
+  }
+
+  void _listAbastecimentos(Veiculo veiculo) async {
+    getManutencoes(veiculo);
+    showAbastecimentosModal();
+  }
+
+  void _listManutencoes(Veiculo veiculo) {
+    getManutencoes(veiculo);
+    showAbastecimentosModal();
   }
 
   void _removeVeiculo(Veiculo onibus) async {
@@ -142,17 +230,16 @@ class _VeiculosState extends State<Veiculos> {
         veiculoList: _loadedItems,
         onRemoveVeiculo: _showDeleteConfirmationDialog,
         onEditVeiculo: _editVeiculo,
+        onListAbastecimentos: _listAbastecimentos,
+        onListManutencoes: _listManutencoes,
+        onCreateAbastecimento: newManutencoesModal,
+        onCreateManutencao: newAbastecimentoModal,
+        saveVeiculoForManutencao: saveVeiculoForManutencao,
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          const DropdownMenuButton(),
-          IconButton(onPressed: _loadItems, icon: const Icon(Icons.refresh)),
-          IconButton(onPressed: _addItem, icon: const Icon(Icons.add))
-        ],
-      ),
+      appBar: customAppBar(loadItems: _loadItems, addItem: _addItem),
       body: Column(
         children: [Expanded(child: mainContent)],
       ),

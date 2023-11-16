@@ -7,7 +7,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:fleet_tour/configs/server.dart';
-import 'package:fleet_tour/models/funcionario.dart'; // Atualize com o seu modelo
+import 'package:fleet_tour/models/funcionario.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart'; // Atualize com o seu modelo
 
 class EditFuncionario extends StatefulWidget {
   const EditFuncionario({Key? key}) : super(key: key);
@@ -19,6 +20,10 @@ class EditFuncionario extends StatefulWidget {
 class _EditFuncionarioState extends State<EditFuncionario> {
   final _formKey = GlobalKey<FormState>();
   final Funcionario _funcionario = Get.arguments;
+  final MaskTextInputFormatter rgMaskFormatter = MaskTextInputFormatter(
+    mask: '##.###.###-#', // This is the mask for the RG format.
+    filter: {"#": RegExp(r'[0-9Xx]')}, // RG can end with a number or 'X'/'x'.
+  );
 
   @override
   void initState() {
@@ -38,7 +43,9 @@ class _EditFuncionarioState extends State<EditFuncionario> {
       var storage = GetStorage();
       final token = storage.read("token");
       final url = Uri.http(ip, 'funcionarios/${_funcionario.idFuncionario}');
-      final body = json.encode(_funcionario.toJson());
+      var bodyBeforeJson = _funcionario.toJson();
+
+      final body = json.encode(bodyBeforeJson);
       final response = await http.put(
         url,
         headers: {
@@ -176,7 +183,7 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                   decoration: const InputDecoration(label: Text("RG")),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    RgInputFormatter(),
+                    rgMaskFormatter,
                   ],
                   onSaved: (value) => _funcionario.rg = value,
                   validator: (value) {
@@ -202,6 +209,12 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 ),
                 TextFormField(
                   initialValue: formatDateForInput(_funcionario.dataNasc),
+                  validator: (value) {
+                    if (!GetUtils.isLengthEqualTo(value, 10)) {
+                      return 'Informe a data de nascimento';
+                    }
+                    return null;
+                  },
                   decoration:
                       const InputDecoration(label: Text("Data de Nascimento")),
                   onSaved: (value) {
@@ -220,6 +233,18 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 ),
                 TextFormField(
                   initialValue: formatDateForInput(_funcionario.vencimentoCnh),
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      value = value.replaceAll('/', '-');
+                      var splitValue = value.split('-');
+                      value =
+                          '${splitValue[2]}-${splitValue[1]}-${splitValue[0]}';
+                    }
+                    if (!GetUtils.isLengthEqualTo(value, 10)) {
+                      return 'Informe a data vencimento da CNH';
+                    }
+                    return null;
+                  },
                   decoration:
                       const InputDecoration(label: Text("Vencimento da CNH")),
                   onSaved: (value) {
@@ -239,6 +264,12 @@ class _EditFuncionarioState extends State<EditFuncionario> {
                 TextFormField(
                   initialValue:
                       formatDateForInput(_funcionario.vencimentoCartSaude),
+                  validator: (value) {
+                    if (!GetUtils.isLengthEqualTo(value, 10)) {
+                      return 'Informe a data vencimento do cartão de saúde';
+                    }
+                    return null;
+                  },
                   decoration: const InputDecoration(
                       label: Text("Vencimento Cartão Saúde")),
                   onSaved: (value) {

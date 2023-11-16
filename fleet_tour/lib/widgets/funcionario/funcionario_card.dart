@@ -3,8 +3,9 @@ import 'package:fleet_tour/models/funcionario.dart'; // Update with your model
 
 class FuncionarioCard extends StatelessWidget {
   final Funcionario funcionario;
+  final bool isSelected;
 
-  const FuncionarioCard({super.key, required this.funcionario});
+  const FuncionarioCard({super.key, required this.funcionario, this.isSelected = false,});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +14,7 @@ class FuncionarioCard extends StatelessWidget {
     formattedDate = formattedDate.replaceAll(" 00:00:00.000Z", "");
     
     return Card(
+      color: isSelected ? Colors.green : const Color.fromARGB(255, 39, 142, 178),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

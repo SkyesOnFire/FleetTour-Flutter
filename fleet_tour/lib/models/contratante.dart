@@ -52,7 +52,6 @@ class Contratante {
       email: json['email'],
       tipoCliente: json['tipoCliente'],
       endereco: json['endereco'] != null ? Endereco.fromJson(json['endereco']) : null,
-      empresa: json['empresa'] != null ? Empresa.fromJson(json['empresa']) : null,
       viagens: json['viagens'] != null ? (json['viagens'] as List).map((i) => Viagem.fromJson(i)).toList() : null,
     );
   }

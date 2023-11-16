@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fleet_tour/configs/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
 import 'package:fleet_tour/models/passageiro.dart';
@@ -62,7 +63,11 @@ class _PassageirosState extends State<Passageiros> {
   }
 
   void _editPassageiro(Passageiro passageiro) async {
-    await Get.toNamed('/passageiros/editar', arguments: passageiro);
+    if (passageiro.tipoCliente == 'Compras') {
+      await Get.toNamed('/passageiros/editar/compras', arguments: passageiro);
+    } else {
+      await Get.toNamed('/passageiros/editar/turismo', arguments: passageiro);
+    }
     _loadItems();
   }
 
@@ -78,8 +83,7 @@ class _PassageirosState extends State<Passageiros> {
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
-              _loadItems();
-              Get.back();
+              Get.offAll(() => const Passageiros(), transition: Transition.noTransition);
             },
           ),
           TextButton(
@@ -191,14 +195,7 @@ class _PassageirosState extends State<Passageiros> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          const DropdownMenuButton(),
-          IconButton(onPressed: _loadItems, icon: const Icon(Icons.refresh)),
-          IconButton(
-              onPressed: _escolherTipoPassageiro, icon: const Icon(Icons.add)),
-        ],
-      ),
+      appBar: customAppBar(loadItems: _loadItems, addItem: _escolherTipoPassageiro),
       body: Column(
         children: [Expanded(child: mainContent)],
       ),

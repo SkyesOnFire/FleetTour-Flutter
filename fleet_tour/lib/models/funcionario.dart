@@ -51,10 +51,8 @@ class Funcionario {
       dataNasc: json['dataNasc'] != null ? DateTime.parse(json['dataNasc']) : null,
       vencimentoCnh: json['vencimentoCnh'] != null ? DateTime.parse(json['vencimentoCnh']) : null,
       vencimentoCartSaude: json['vencimentoCartSaude'] != null ? DateTime.parse(json['vencimentoCartSaude']) : null,
-      empresa: json['empresa'] != null ? Empresa.fromJson(json['empresa']) : null,
       endereco: json['endereco'] != null ? Endereco.fromJson(json['endereco']) : null,
       manutencoes: json['manutencoes'] != null ? List<Manutencao>.from(json['manutencoes'].map((x) => Manutencao.fromJson(x))) : null,
-      viagens: json['viagens'] != null ? List<Viagem>.from(json['viagens'].map((x) => Viagem.fromJson(x))) : null,
     );
   }
 
@@ -74,7 +72,6 @@ class Funcionario {
       'empresa': empresa?.toJson(),
       'endereco': endereco?.toJson(),
       'manutencoes': manutencoes?.map((x) => x.toJson()).toList(),
-      'viagens': viagens?.map((x) => x.toJson()).toList(),
     };
   }
 }

@@ -50,10 +50,8 @@ class Passageiro {
       nomeFantasia: json['nomeFantasia'],
       cnpj: json['cnpj'],
       dataNasc: json['dataNasc'] != null ? DateTime.parse(json['dataNasc']) : null,
-      empresa: json['empresa'] != null ? Empresa.fromJson(json['empresa']) : null,
       endereco: json['endereco'] != null ? Endereco.fromJson(json['endereco']) : null,
       enderecoLoja: json['enderecoLoja'] != null ? Endereco.fromJson(json['enderecoLoja']) : null,
-      viagens: json['viagens'] != null ? List<Viagem>.from(json['viagens'].map((x) => Viagem.fromJson(x))) : null,
     );
   }
 
@@ -73,7 +71,6 @@ class Passageiro {
       'empresa': empresa?.toJson(),
       'endereco': endereco?.toJson(),
       'enderecoLoja': enderecoLoja?.toJson(),
-      'viagens': viagens?.map((x) => x.toJson()).toList(),
     };
   }
 }

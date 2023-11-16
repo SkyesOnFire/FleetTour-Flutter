@@ -11,14 +11,39 @@ class DropdownMenuButton extends StatefulWidget {
 
 class _DropdownMenuButtonState extends State<DropdownMenuButton> {
   List<String> dropdownItems = [
+    'Tela Inicial',
     'Gerenciamento de Frota',
     'Gerenciamento de Passageiros',
     'Gerenciamento de Funcionarios',
+    'Gerenciamento de Contratantes',
+    'Gerenciamento de Viagens',
     'Informações da Empresa'
   ];
 
   final DropdownState dropdownState =
       Get.find(); // Ensure DropdownState has an observable variable
+
+  int findIndex() {
+    return Get.currentRoute == '/veiculos'
+        ? 1
+        : Get.currentRoute == '/passageiros'
+            ? 2
+            : Get.currentRoute == '/funcionarios'
+                ? 3
+                : Get.currentRoute == '/contratantes'
+                    ? 4
+                    : Get.currentRoute == '/viagens'
+                        ? 5
+                        : Get.currentRoute == '/empresas'
+                            ? 6
+                            : 0;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    dropdownState.selectItem(dropdownItems[findIndex()]); // Set initial value
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,15 +80,20 @@ class _DropdownMenuButtonState extends State<DropdownMenuButton> {
             onChanged: (String? newValue) {
               dropdownState.selectItem(
                   newValue); // This should update the observable variable
-
               if (newValue == "Gerenciamento de Frota") {
-                Get.offNamed('/veiculos'); // Usando Get.to() para navegação
+                Get.offAllNamed('/veiculos'); // Usando Get.to() para navegação
+              } else if (newValue == "Tela Inicial") {
+                Get.offAllNamed('/home');
               } else if (newValue == "Gerenciamento de Passageiros") {
-                Get.offNamed('/passageiros');
+                Get.offAllNamed('/passageiros');
               } else if (newValue == "Gerenciamento de Funcionarios") {
-                Get.offNamed('/funcionarios');
+                Get.offAllNamed('/funcionarios');
+              } else if (newValue == "Gerenciamento de Contratantes") {
+                Get.offAllNamed('/contratantes');
               } else if (newValue == "Informações da Empresa") {
-                Get.offNamed('/empresas');
+                Get.offAllNamed('/empresas');
+              } else if (newValue == "Gerenciamento de Viagens") {
+                Get.offAllNamed('/viagens');
               }
             },
           ), // Your DropdownButton widget

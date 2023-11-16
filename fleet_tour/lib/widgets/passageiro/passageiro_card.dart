@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fleet_tour/models/passageiro.dart';
 
 class PassageiroCard extends StatelessWidget {
-  const PassageiroCard({super.key, required this.passageiro});
+  const PassageiroCard({super.key, required this.passageiro, this.isSelected = false,});
 
   final Passageiro passageiro;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,7 @@ class PassageiroCard extends StatelessWidget {
     formattedDate = formattedDate.replaceAll(" 00:00:00.000Z", "");
 
     return Card(
+      color: isSelected ? Colors.green : const Color.fromARGB(255, 39, 142, 178),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(

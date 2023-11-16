@@ -288,11 +288,11 @@ class _EditVeiculoState extends State<EditVeiculo> {
                           DataInputFormatter(),
                         ],
                         decoration: const InputDecoration(
-                          label: Text("Data da última vistoria"),
+                          label: Text("Vigência da última vistoria"),
                         ),
                         validator: (value) {
                           if (!GetUtils.isLengthEqualTo(value, 10)) {
-                            return 'Data inválida.';
+                            return 'Informe a vigência da última vistoria';
                           }
                           return null;
                         },
@@ -318,11 +318,11 @@ class _EditVeiculoState extends State<EditVeiculo> {
                           DataInputFormatter(),
                         ],
                         decoration: const InputDecoration(
-                          label: Text("Data de emissão do seguro"),
+                          label: Text("Data de vigência do seguro"),
                         ),
                         validator: (value) {
                           if (!GetUtils.isLengthEqualTo(value, 10)) {
-                            return 'Data inválida.';
+                            return 'Informe a data de vigência do seguro';
                           }
                           return null;
                         },
@@ -353,11 +353,11 @@ class _EditVeiculoState extends State<EditVeiculo> {
                           DataInputFormatter(),
                         ],
                         decoration: const InputDecoration(
-                          label: Text("Data do licenciamento ANTT"),
+                          label: Text("Vigência do licenciamento ANTT"),
                         ),
                         validator: (value) {
                           if (!GetUtils.isLengthEqualTo(value, 10)) {
-                            return 'Data inválida.';
+                            return 'Informe a vigência de licenciamento ANTT';
                           }
                           return null;
                         },
@@ -384,11 +384,11 @@ class _EditVeiculoState extends State<EditVeiculo> {
                           DataInputFormatter(),
                         ],
                         decoration: const InputDecoration(
-                          label: Text("Data do licenciamento DER"),
+                          label: Text("Vigência do licenciamento DER"),
                         ),
                         validator: (value) {
                           if (!GetUtils.isLengthEqualTo(value, 10)) {
-                            return 'Data inválida.';
+                            return 'Informe a vigência de licenciamento DER';
                           }
                           return null;
                         },

@@ -2,24 +2,24 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fleet_tour/configs/custom_app_bar.dart';
-import 'package:fleet_tour/widgets/dropdown_menu.dart';
+import 'package:fleet_tour/models/contratante.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/configs/server.dart';
-import 'package:fleet_tour/models/funcionario.dart';
-import 'package:fleet_tour/widgets/funcionario/funcionario_list.dart';
+import 'package:fleet_tour/widgets/dropdown_menu.dart';
+import 'package:fleet_tour/widgets/contratante/contratante_list.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-class Funcionarios extends StatefulWidget {
-  const Funcionarios({super.key});
+class Contratantes extends StatefulWidget {
+  const Contratantes({super.key});
 
   @override
-  State<Funcionarios> createState() => _FuncionariosState();
+  State<Contratantes> createState() => _ContratantesState();
 }
 
-class _FuncionariosState extends State<Funcionarios> {
-  List<Funcionario> _loadedItems = [];
+class _ContratantesState extends State<Contratantes> {
+  List<Contratante> _loadedItems = [];
 
   @override
   void initState() {
@@ -40,13 +40,12 @@ class _FuncionariosState extends State<Funcionarios> {
     _loadedItems = [];
     var storage = GetStorage();
     final token = storage.read("token");
-    final url = Uri.http(ip, 'funcionarios');
-    final response =
-        await http.get(url, headers: {'authorization': "Bearer ${token!}"});
-    if (response.statusCode == 200 || response.body.isNotEmpty) {
-      final body = json.decode(response.body);
+    final response = await http.get(Uri.http(ip, 'contratantes'),
+        headers: {'authorization': "Bearer ${token!}"});
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final body = json.decode(utf8.decode(response.body.runes.toList()));
       for (var item in body) {
-        _loadedItems.add(Funcionario.fromJson(item));
+        _loadedItems.add(Contratante.fromJson(item));
       }
     }
     Get.close(1);
@@ -54,20 +53,20 @@ class _FuncionariosState extends State<Funcionarios> {
   }
 
   void _addItem() async {
-    await Get.toNamed('/funcionario/novo');
+    await Get.toNamed('/contratantes/novo');
     _loadItems();
   }
 
-  void _editFuncionario(Funcionario funcionario) async {
-    await Get.toNamed('/funcionarios/editar', arguments: funcionario);
+  void _editContratante(Contratante contratante) async {
+    await Get.toNamed('/contratantes/editar', arguments: contratante);
     _loadItems();
   }
 
-  void _showDeleteConfirmationDialog(Funcionario funcionario) {
+  void _showDeleteConfirmationDialog(Contratante contratante) {
     Get.dialog(
       AlertDialog(
         title: const Text('Confirmação de exclusão'),
-        content: const Text('Tem certeza que deseja deletar este funcionário?'),
+        content: const Text('Tem certeza que deseja deletar este contratante?'),
         actions: <Widget>[
           TextButton(
             child: const Text(
@@ -75,7 +74,7 @@ class _FuncionariosState extends State<Funcionarios> {
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
-              Get.offAll(() => const Funcionarios(), transition: Transition.noTransition);
+              Get.offAll(() => const Contratantes(), transition: Transition.noTransition);
             },
           ),
           TextButton(
@@ -85,7 +84,7 @@ class _FuncionariosState extends State<Funcionarios> {
             ),
             onPressed: () {
               Get.back();
-              _removeFuncionario(funcionario);
+              _removeContratante(contratante);
             },
           ),
         ],
@@ -95,23 +94,22 @@ class _FuncionariosState extends State<Funcionarios> {
     );
   }
 
-  void _removeFuncionario(Funcionario funcionario) async {
-    final funcionarioIndex = _loadedItems.indexOf(funcionario);
+  void _removeContratante(Contratante contratante) async {
+    final contratanteIndex = _loadedItems.indexOf(contratante);
     setState(() {
-      _loadedItems.remove(funcionario);
+      _loadedItems.remove(contratante);
     });
-
-    var funcionarioId = funcionario.idFuncionario.toString();
+    final contratanteId = contratante.idContratante;
     var storage = GetStorage();
     final token = await storage.read("token");
-    final url = Uri.http(ip, 'funcionarios/$funcionarioId');
+    final url = Uri.http(ip, 'contratantes/$contratanteId');
     final response = await http.delete(url,
         headers: {HttpHeaders.authorizationHeader: "Bearer ${token!}"});
-    if (response.statusCode == 204) {
+    if (response.statusCode >= 204) {
       Get.closeAllSnackbars();
       Get.snackbar(
-        'Funcionário deletado',
-        'O funcionário foi deletado com sucesso',
+        'Contratante deletado',
+        'O contratante foi deletado com sucesso',
         duration: const Duration(seconds: 3),
         backgroundColor: Colors.green,
         colorText: Colors.white,
@@ -119,11 +117,11 @@ class _FuncionariosState extends State<Funcionarios> {
       );
     } else {
       setState(() {
-        _loadedItems.insert(funcionarioIndex, funcionario);
+        _loadedItems.insert(contratanteIndex, contratante);
       });
       Get.closeAllSnackbars();
       Get.snackbar(
-        'Erro ao deletar funcionário',
+        'Erro ao deletar contratante',
         'Por favor, tente novamente mais tarde',
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -135,14 +133,14 @@ class _FuncionariosState extends State<Funcionarios> {
   @override
   Widget build(BuildContext context) {
     Widget mainContent = const Center(
-      child: Text('Nenhum funcionário cadastrado, inicie cadastrando um!'),
+      child: Text('Nenhum contratante cadastrado, inicie cadastrando um!'),
     );
 
     if (_loadedItems.isNotEmpty) {
-      mainContent = FuncionariosList(
-        funcionarios: _loadedItems,
-        onDelete: _showDeleteConfirmationDialog,
-        onEdit: _editFuncionario,
+      mainContent = ContratanteList(
+        contratanteList: _loadedItems,
+        onRemoveContratante: _showDeleteConfirmationDialog,
+        onEditContratante: _editContratante,
       );
     }
 

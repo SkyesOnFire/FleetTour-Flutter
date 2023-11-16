@@ -1,10 +1,16 @@
 import 'package:fleet_tour/providers/dropdown_state.dart';
+import 'package:fleet_tour/widgets/contratante/contratantes.dart';
+import 'package:fleet_tour/widgets/contratante/edit_contratante.dart';
+import 'package:fleet_tour/widgets/contratante/new_contratante.dart';
 import 'package:fleet_tour/widgets/empresa/edit_empresa.dart';
 import 'package:fleet_tour/widgets/empresa/empresas.dart';
 import 'package:fleet_tour/widgets/funcionario/edit_funcionario.dart';
 import 'package:fleet_tour/widgets/funcionario/funcionarios.dart';
 import 'package:fleet_tour/widgets/funcionario/new_funcionario.dart';
 import 'package:fleet_tour/widgets/generic/generic_address_screen.dart';
+import 'package:fleet_tour/widgets/generic/generic_home_screen.dart';
+import 'package:fleet_tour/widgets/passageiro/edit_passageiro_compras.dart';
+import 'package:fleet_tour/widgets/passageiro/edit_passageiro_turismo.dart';
 import 'package:fleet_tour/widgets/passageiro/new_passageiro_compras.dart';
 import 'package:fleet_tour/widgets/passageiro/new_passageiro_turismo.dart';
 import 'package:fleet_tour/widgets/passageiro/passageiros.dart';
@@ -14,6 +20,9 @@ import 'package:fleet_tour/widgets/register/user_register_screen.dart';
 import 'package:fleet_tour/widgets/veiculo/edit_veiculo.dart';
 import 'package:fleet_tour/widgets/veiculo/new_veiculo.dart';
 import 'package:fleet_tour/widgets/veiculo/veiculo.dart';
+import 'package:fleet_tour/widgets/viagem/edit_viagem.dart';
+import 'package:fleet_tour/widgets/viagem/new_viagem.dart';
+import 'package:fleet_tour/widgets/viagem/viagens.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // Importe o GetX
 import 'package:fleet_tour/widgets/login_screen.dart';
@@ -68,9 +77,13 @@ void main() {
             borderRadius: BorderRadius.circular(15.0),
           ),
         ),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
       ),
       home: const LoginScreen(),
       getPages: [
+        GetPage(name: '/home', page: () => const Home()),
         GetPage(name: '/login', page: () => const LoginScreen()),
         GetPage(
             name: '/registro/endereco',
@@ -89,10 +102,25 @@ void main() {
         GetPage(name: '/empresas', page: () => const Empresas()),
         GetPage(name: '/empresas/editar', page: () => const EditEmpresa()),
         GetPage(name: '/passageiros', page: () => const Passageiros()),
-        GetPage(name: '/passageiros/novo/compras',
+        GetPage(
+            name: '/passageiros/novo/compras',
             page: () => const NewPassageiroCompras()),
-        GetPage(name: '/passageiros/novo/turismo',
+        GetPage(
+            name: '/passageiros/editar/compras',
+            page: () => const EditPassageiroCompras()),
+        GetPage(
+            name: '/passageiros/novo/turismo',
             page: () => const NewPassageiroTurismo()),
+        GetPage(
+            name: '/passageiros/editar/turismo',
+            page: () => const EditPassageiroTurismo()),
+        GetPage(name: '/contratantes', page: () => const Contratantes()),
+        GetPage(name: '/contratantes/novo', page: () => const NewContratante()),
+        GetPage(
+            name: '/contratantes/editar', page: () => const EditContratante()),
+        GetPage(name: '/viagens', page: () => const Viagens()),
+        GetPage(name: '/viagens/novo', page: () => const NewViagem()),
+        GetPage(name: '/viagens/editar', page: () => const EditViagem()),
       ],
     ),
   );

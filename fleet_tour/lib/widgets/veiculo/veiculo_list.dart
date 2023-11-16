@@ -1,4 +1,5 @@
 import 'package:fleet_tour/widgets/veiculo/veiculo_card.dart';
+import 'package:fleet_tour/widgets/veiculo/veiculo_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:fleet_tour/models/veiculo.dart';
 
@@ -7,10 +8,20 @@ class VeiculoList extends StatelessWidget {
       {super.key,
       required this.veiculoList,
       required this.onRemoveVeiculo,
-      required this.onEditVeiculo});
+      required this.onEditVeiculo, 
+      required this.onListAbastecimentos,
+      required this.onListManutencoes,
+      required this.onCreateAbastecimento,
+      required this.onCreateManutencao, 
+      required this.saveVeiculoForManutencao});
 
+  final void Function(Veiculo veiculo) saveVeiculoForManutencao;
   final void Function(Veiculo veiculo) onEditVeiculo;
   final void Function(Veiculo veiculo) onRemoveVeiculo;
+  final void Function(Veiculo veiculo) onListAbastecimentos;
+  final void Function(Veiculo veiculo) onListManutencoes;
+  final void Function() onCreateAbastecimento;
+  final void Function() onCreateManutencao;
   final List<Veiculo> veiculoList;
 
   @override
@@ -30,7 +41,14 @@ class VeiculoList extends StatelessWidget {
             onDismissed: (direction) {
               onRemoveVeiculo(veiculoList[index]);
             },
-            child: VeiculoCard(veiculoList[index])),
+            child: VeiculoTile(
+              veiculoList[index],
+            onListAbastecimentos: onListAbastecimentos,
+            onListManutencoes: onListManutencoes,
+            onCreateAbastecimento: onCreateAbastecimento,
+            onCreateManutencao: onCreateManutencao,
+            saveVeiculoForManutencao: saveVeiculoForManutencao,
+            )),
       ),
     );
   }

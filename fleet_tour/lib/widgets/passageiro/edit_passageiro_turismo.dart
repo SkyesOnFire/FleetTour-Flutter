@@ -12,26 +12,24 @@ import 'package:http/http.dart' as http;
 import 'package:fleet_tour/configs/server.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-class NewPassageiroCompras extends StatefulWidget {
-  const NewPassageiroCompras({super.key});
+class EditPassageiroTurismo extends StatefulWidget {
+  const EditPassageiroTurismo({super.key});
 
   @override
-  State<NewPassageiroCompras> createState() {
-    return _NewPassageiroComprasState();
+  State<EditPassageiroTurismo> createState() {
+    return _EditPassageiroTurismoState();
   }
 }
 
-class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
+class _EditPassageiroTurismoState extends State<EditPassageiroTurismo> {
+  final _formKey = GlobalKey<FormState>();
+  final Passageiro _passageiro = Get.arguments;
   final storage = GetStorage();
-
   final TextEditingController _enderecoController = TextEditingController();
-  final TextEditingController _enderecoLojaController = TextEditingController();
   final MaskTextInputFormatter rgMaskFormatter = MaskTextInputFormatter(
     mask: '##.###.###-#', // This is the mask for the RG format.
     filter: {"#": RegExp(r'[0-9Xx]')}, // RG can end with a number or 'X'/'x'.
   );
-  final _formKey = GlobalKey<FormState>();
-  final Passageiro _passageiro = Passageiro();
 
   void _savePassageiro() async {
     if (_formKey.currentState!.validate()) {
@@ -46,9 +44,9 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
       );
 
       final token = storage.read("token");
-      final url = Uri.http(ip, 'passageiros');
+      final url = Uri.http(ip, 'passageiros/${_passageiro.idPassageiro}');
       final body = json.encode(_passageiro.toJson());
-      final response = await http.post(url,
+      final response = await http.put(url,
           headers: {
             'authorization': "Bearer ${token!}",
             'content-type': "application/json",
@@ -59,7 +57,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
         Get.close(1);
         Get.snackbar(
           'Sucesso',
-          'Passageiro cadastrado com sucesso!',
+          'Passageiro editado com sucesso!',
           backgroundColor: Colors.green,
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -69,7 +67,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
         Get.close(1);
         Get.snackbar(
           'Erro',
-          'Erro ao cadastrar passageiro!',
+          'Erro ao editar passageiro!',
           backgroundColor: Colors.red,
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -80,10 +78,12 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
 
   @override
   Widget build(BuildContext context) {
-    _passageiro.tipoCliente = 'Compras';
+    _passageiro.tipoCliente = 'Turismo';
+    _enderecoController.text =
+        "${_passageiro.endereco!.rua}, ${_passageiro.endereco!.numero} - ${_passageiro.endereco!.cidade} / ${_passageiro.endereco!.estado}";
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cadastrar novo passageiro"),
+        title: const Text("Editar passageiro"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -95,6 +95,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: _passageiro.nome,
                     decoration: const InputDecoration(
                       label: Text("Nome Completo"),
                     ),
@@ -116,10 +117,11 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          initialValue: _passageiro.rg,
                           maxLength: 12,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
-                            rgMaskFormatter,
+                            rgMaskFormatter
                           ],
                           decoration: const InputDecoration(
                             label: Text("RG"),
@@ -142,6 +144,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           maxLength: 6,
+                          initialValue: _passageiro.orgaoEmissor,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
                             label: Text("Orgão emissor"),
@@ -167,6 +170,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          initialValue: _passageiro.cpf,
                           maxLength: 14,
                           decoration: const InputDecoration(
                             label: Text("CPF"),
@@ -193,6 +197,8 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          initialValue:
+                              formatDateForInput(_passageiro.dataNasc!),
                           maxLength: 10,
                           decoration: const InputDecoration(
                             label: Text("Data de nascimento"),
@@ -229,6 +235,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          initialValue: _passageiro.telefone,
                           maxLength: 15,
                           decoration: const InputDecoration(
                             label: Text("Telefone"),
@@ -254,6 +261,7 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
+                          initialValue: _passageiro.email,
                           maxLength: 50,
                           decoration: const InputDecoration(
                             label: Text("Email"),
@@ -267,64 +275,6 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                           },
                           onSaved: (value) {
                             _passageiro.email = value!;
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          maxLength: 18,
-                          decoration: const InputDecoration(labelText: 'CNPJ'),
-                          textInputAction: TextInputAction.next,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            CnpjInputFormatter(),
-                          ],
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (!GetUtils.isLengthEqualTo(value, 18)) {
-                              return 'Informe o CNPJ';
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            _passageiro.cnpj = value;
-                            if (GetUtils.isLengthEqualTo(
-                                _passageiro.cnpj, 18)) {
-                              _passageiro.cnpj =
-                                  _passageiro.cnpj!.replaceAll('-', '');
-                              _passageiro.cnpj =
-                                  _passageiro.cnpj!.replaceAll('.', '');
-                              _passageiro.cnpj =
-                                  _passageiro.cnpj!.replaceAll('/', '');
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          maxLength: 150,
-                          decoration: const InputDecoration(
-                            label: Text("Nome Fantasia"),
-                          ),
-                          validator: (value) {
-                            if (value!.trim().length <= 2) {
-                              return 'Entre com o nome fantasia do seu CNPJ';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _passageiro.nomeFantasia = value!;
                           },
                         ),
                       ),
@@ -347,35 +297,9 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                             _passageiro.endereco =
                                 storage.read('temp_endereco');
                             storage.remove('temp_endereco');
-                            if (_passageiro.enderecoLoja != null) {
+                            if (_passageiro.endereco != null) {
                               _enderecoController.text =
                                   "${_passageiro.endereco!.rua}, ${_passageiro.endereco!.numero} - ${_passageiro.endereco!.cidade} / ${_passageiro.endereco!.estado}";
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          controller: _enderecoLojaController,
-                          decoration: const InputDecoration(
-                            label: Text("Endereço Loja"),
-                          ),
-                          onTap: () async {
-                            await Get.toNamed('/endereco',
-                                arguments: _passageiro.enderecoLoja);
-                            _passageiro.enderecoLoja =
-                                storage.read('temp_endereco');
-                            storage.remove('temp_endereco');
-                            if (_passageiro.enderecoLoja != null) {
-                              _enderecoLojaController.text =
-                                  "${_passageiro.enderecoLoja!.rua}, ${_passageiro.enderecoLoja!.numero} - ${_passageiro.enderecoLoja!.cidade} / ${_passageiro.enderecoLoja!.estado}";
                             }
                           },
                         ),
@@ -390,12 +314,12 @@ class _NewPassageiroComprasState extends State<NewPassageiroCompras> {
                     children: [
                       ElevatedButton(
                           onPressed: () {
-                            _formKey.currentState!.reset();
+                            Get.close(1);
                           },
-                          child: const Text('Limpar')),
+                          child: const Text('Cancelar')),
                       ElevatedButton(
                           onPressed: _savePassageiro,
-                          child: const Text('Cadastrar')),
+                          child: const Text('Salvar')),
                     ],
                   ),
                 ),

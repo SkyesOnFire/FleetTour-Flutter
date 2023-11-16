@@ -52,7 +52,6 @@ class Veiculo {
       licenciamentoAntt: json['licenciamentoAntt'] != null ? DateTime.parse(json['licenciamentoAntt']) : null,
       licenciamentoDer: json['licenciamentoDer'] != null ? DateTime.parse(json['licenciamentoDer']) : null,
       manutencoes: json['manutencoes'] != null ? (json['manutencoes'] as List).map((i) => Manutencao.fromJson(i)).toList() : null,
-      empresa: json['empresa'] != null ? Empresa.fromJson(json['empresa']) : null,
     );
   }
 

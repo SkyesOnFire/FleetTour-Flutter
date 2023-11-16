@@ -2,24 +2,29 @@ import 'dart:convert';
 
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:fleet_tour/configs/server.dart';
-import 'package:fleet_tour/data/validation_utils.dart';
 import 'package:fleet_tour/models/funcionario.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class NewFuncionario extends StatefulWidget {
   const NewFuncionario({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NewFuncionarioState createState() => _NewFuncionarioState();
 }
 
 class _NewFuncionarioState extends State<NewFuncionario> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Funcionario _funcionario = Funcionario();
+  final MaskTextInputFormatter rgMaskFormatter = MaskTextInputFormatter(
+    mask: '##.###.###-#', // This is the mask for the RG format.
+    filter: {"#": RegExp(r'[0-9Xx]')}, // RG can end with a number or 'X'/'x'.
+  );
 
   void _saveFuncionario() async {
     final form = _formKey.currentState;
@@ -176,6 +181,10 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                 Padding(
                   padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
                   child: TextFormField(
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      rgMaskFormatter,
+                    ],
                     decoration: const InputDecoration(label: Text("RG")),
                     onSaved: (value) => _funcionario.rg = value,
                     validator: (value) {
@@ -220,6 +229,12 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                       FilteringTextInputFormatter.digitsOnly,
                       DataInputFormatter(),
                     ],
+                    validator: (value) {
+                      if (!GetUtils.isLengthEqualTo(value, 10)) {
+                        return 'Informe a data de nascimento';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 Padding(
@@ -240,6 +255,12 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                       FilteringTextInputFormatter.digitsOnly,
                       DataInputFormatter(),
                     ],
+                    validator: (value) {
+                      if (!GetUtils.isLengthEqualTo(value, 10)) {
+                        return 'Informe a data de vencimento da CNH';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 Padding(
@@ -261,6 +282,12 @@ class _NewFuncionarioState extends State<NewFuncionario> {
                       FilteringTextInputFormatter.digitsOnly,
                       DataInputFormatter(),
                     ],
+                    validator: (value) {
+                      if (!GetUtils.isLengthEqualTo(value, 10)) {
+                        return 'Informe a data de vencimento do cartão de saúde';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 Padding(

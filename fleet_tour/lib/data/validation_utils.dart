@@ -101,21 +101,25 @@ String formatCNPJ(String cnpj) {
 }
 
 String formatTelefone(String telefone) {
+  // Check if the length is not 10 or 11, return the original string.
   if (telefone.length != 10 && telefone.length != 11) {
-    if (kDebugMode) {
-      print('Error converting $telefone to phone number.');
-    }
+    print('Error converting $telefone to phone number.'); // Using print directly since kDebugMode is not defined here.
     return telefone;
   }
+
+  // Extract the area code.
   var formatted = '(${telefone.substring(0, 2)}) ';
-  if (telefone.length == 10) {
-    formatted += '${telefone.substring(2, 3)} ';
+
+  // Check for the length and format accordingly.
+  if (telefone.length == 11) { // Mobile phones with 9 digits after area code.
+    formatted += '${telefone.substring(2, 7)}-${telefone.substring(7)}';
+  } else { // Landlines with 8 digits after area code.
+    formatted += '${telefone.substring(2, 6)}-${telefone.substring(6)}';
   }
-  formatted +=
-      '${telefone.substring(telefone.length - 9, telefone.length - 4)}-';
-  formatted += telefone.substring(telefone.length - 4);
+
   return formatted;
 }
+
 
 String decodeUtf8String(String nonUtf8String) {
   List<int> bytes = nonUtf8String.codeUnits;

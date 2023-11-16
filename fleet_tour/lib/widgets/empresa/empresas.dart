@@ -27,8 +27,9 @@ class _EmpresasState extends State<Empresas> {
     });
   }
 
-  void _editCompany() {
-    Get.toNamed('/empresas/editar', arguments: _empresa);
+  void _editCompany() async {
+    await Get.toNamed('/empresas/editar', arguments: _empresa);
+    _loadItems();
   }
 
   void _editAddress() async {
@@ -250,6 +251,12 @@ class _EmpresasState extends State<Empresas> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.logout), // Logout icon
+          onPressed: () {
+            Get.offAllNamed('/login');
+          },
+        ),
         actions: const [
           Expanded(
             child: Row(
